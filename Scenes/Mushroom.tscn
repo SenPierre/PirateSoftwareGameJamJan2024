@@ -1,25 +1,39 @@
-[gd_scene load_steps=5 format=3 uid="uid://b2wsikbiydijw"]
+[gd_scene load_steps=6 format=3 uid="uid://b2wsikbiydijw"]
 
 [ext_resource type="Script" path="res://Scripts/Mushroom.cs" id="1_e5fnt"]
 [ext_resource type="Script" path="res://Scripts/Masks/MaskDrawNode.cs" id="2_y6s1w"]
 [ext_resource type="Texture2D" uid="uid://p6nbm2pvheso" path="res://Textures/Shroom1.png" id="3_2pmx4"]
+[ext_resource type="Texture2D" uid="uid://bnyb8yrn0uw5e" path="res://Textures/ShrromSelect.png" id="3_7omdv"]
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_srv6c"]
-radius = 15.0
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_sa2t7"]
+size = Vector2(30, 30)
 
 [node name="Mushroom" type="Node2D"]
+texture_filter = 1
 script = ExtResource("1_e5fnt")
+
+[node name="Line2D" type="Line2D" parent="."]
+points = PackedVector2Array(0, 0, 0, 0)
+width = 5.0
+default_color = Color(0.72549, 0.427451, 0.0980392, 1)
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 self_modulate = Color(0.72549, 0.427451, 0.0980392, 1)
+z_index = 1
+scale = Vector2(0.5, 0.5)
 texture = ExtResource("3_2pmx4")
+
+[node name="Area2D" type="Area2D" parent="Sprite2D"]
+z_index = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Sprite2D/Area2D"]
+shape = SubResource("RectangleShape2D_sa2t7")
+
+[node name="Select" type="Sprite2D" parent="Sprite2D"]
+visible = false
+texture = ExtResource("3_7omdv")
 
 [node name="MaskDrawer" type="Node2D" parent="."]
 script = ExtResource("2_y6s1w")
 
-[node name="Area2D" type="Area2D" parent="."]
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
-shape = SubResource("CircleShape2D_srv6c")
-
-[connection signal="input_event" from="Area2D" to="." method="InputEvent"]
+[connection signal="input_event" from="Sprite2D/Area2D" to="." method="InputEvent"]
