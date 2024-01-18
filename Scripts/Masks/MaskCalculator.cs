@@ -4,9 +4,10 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 public class MaskDraw {
-    public MaskDraw(float r, Vector2 p) {radius = r; pos = p;}
+    public MaskDraw(float r, Vector2 p, Color c) {radius = r; pos = p; color = c;}
    public float radius;
    public Vector2 pos; 
+   public Color color;
 }
 
 [Tool]
@@ -48,15 +49,15 @@ public partial class MaskCalculator : Node2D
 
         foreach(MaskDraw mask in maskPos)
         {
-            DrawCircle(mask.pos, mask.radius, new Color(1,1,1,1));
+            DrawCircle(mask.pos, mask.radius, mask.color);
         }
     }
 
     //----------------------------------------------------------
     //
     //----------------------------------------------------------
-    public void AddMaskDraw(Vector2 pos, float radius)
+    public void AddMaskDraw(Vector2 pos, float radius, Color color)
     {
-        maskPos.Add(new MaskDraw(radius, pos));
+        maskPos.Add(new MaskDraw(radius, pos, color));
     }
 }

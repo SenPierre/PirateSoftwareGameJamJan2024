@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using System.Collections.Generic;
 
 public partial class MushroomManager : Node2D
 {
@@ -8,12 +9,15 @@ public partial class MushroomManager : Node2D
     [Export] public Texture2D m_maskField;
 
     private Mushroom m_currentMushroom;
-    public float cooldown = 0.5f;
+    public float cooldown = 0.2f;
+
+    public List<Mushroom> m_RootMushrooms = new List<Mushroom>();
+    public List<Mushroom> m_AllMushrooms = new List<Mushroom>();
 
     //----------------------------------------------------------
     //
     //----------------------------------------------------------
-    public override void _Ready()
+    public override void _EnterTree()
     {
         manager = this;
     }
@@ -51,6 +55,87 @@ public partial class MushroomManager : Node2D
     //----------------------------------------------------------
     //
     //----------------------------------------------------------
+    public bool HasCurrentMushroom()
+    {
+        return m_currentMushroom != null;
+    }
+
+
+    //----------------------------------------------------------
+    //
+    //----------------------------------------------------------
+    public Mushroom GetCurrentMushroom()
+    {
+        return m_currentMushroom;
+    }
+
+    //----------------------------------------------------------
+    //
+    //----------------------------------------------------------
+    public void AddShroom(Mushroom mushroom)
+    {
+        m_AllMushrooms.Add(mushroom);
+        if (mushroom.IsRoot())
+        {
+            m_RootMushrooms.Add(mushroom);
+        }
+    }
+
+    //----------------------------------------------------------
+    //
+    //----------------------------------------------------------
+    public void RemoveShroom(Mushroom mush)
+    {
+        m_AllMushrooms.Remove(mush);
+        if (mush.IsRoot())
+        {
+            m_RootMushrooms.Remove(mush);
+        }
+    }
+
+    //----------------------------------------------------------
+    //
+    //----------------------------------------------------------
+    public Mushroom GetNearbyValidMushroom(Mushroom mush)
+    {
+        float nearestDistanceSquared = 9999.0f * 9999.0f;
+        Mushroom result = null;
+        foreach(Mushroom shroom in m_AllMushrooms)
+        {
+            if (mush != shroom && mush.IsSameKind(shroom) && shroom.ConnectedToRoot())
+            {
+                if (mush.CheckIfCanConnect(shroom))
+                {
+                    float targetDistSquared = (mush.Position - shroom.Position).LengthSquared();
+                    if (targetDistSquared < nearestDistanceSquared)
+                    {
+                        nearestDistanceSquared = targetDistSquared;
+                        result = shroom;
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+
+    //----------------------------------------------------------
+    //
+    //----------------------------------------------------------
+    public void CheckNearbyOpposingMushroom(Mushroom mush)
+    {
+        foreach(Mushroom shroom in m_AllMushrooms)
+        {
+            if (mush != shroom && mush.IsOpponentKind(shroom))
+            {
+                mush.CheckStartFight(shroom);
+            }
+        }
+    }
+
+    //----------------------------------------------------------
+    //
+    //----------------------------------------------------------
     public void InputEvent(Node viewport, InputEvent generatedEvent, int shapeIdx)
     {
         InputEventMouse mouseEvent = (InputEventMouse)generatedEvent;
@@ -61,20 +146,46 @@ public partial class MushroomManager : Node2D
             if (buttonRightPressed != 0)
             {
                 SetCurrentMushroom(null);
-                cooldown = 0.5f;
+                cooldown = 0.2f;
             }
-            else if (Input.IsActionJustPressed("DROP"))
+            else if (buttonLeftPressed != 0)
             {
-                GD.Print("DROP");
-                Vector2 pos = GetViewport().GetMousePosition();
-                Color maskColor = m_maskField.GetImage().GetPixel((int)pos.X, (int)pos.Y);
-                if (maskColor.R > 0.0)
+                Mushroom MushroomFound = null;
+                foreach(Mushroom mush in m_AllMushrooms)
                 {
-                    m_currentMushroom.SpawnAnOffspring(pos);
+                    if (GetViewport().GetMousePosition().DistanceSquaredTo(mush.Position) < 100.0f)
+                    {
+                        MushroomFound = mush;
+                        break;
+                    }
                 }
-                
-                SetCurrentMushroom(null);
-                cooldown = 0.5f;
+
+                if (MushroomFound != null)
+                {
+                    List<Mushroom> path = new List<Mushroom>();
+                    if (MushroomFound.FindMushroomPath(GetCurrentMushroom(), ref path))
+                    {
+                        PackedScene shroomPrefab = ResourceLoader.Load<PackedScene>("res://Scenes/MushroomPowerTransfer.tscn");
+                    
+                        MushroomPowerTransfer transfer = shroomPrefab.Instantiate<MushroomPowerTransfer>();
+                        transfer.m_Path = path;
+                        transfer.Position = GetCurrentMushroom().Position;
+                        transfer.m_PowerTransfered = 100.0f;
+                        AddSibling(transfer);
+                        m_currentMushroom.Transfer(-100.0f);
+
+                        cooldown = 0.2f;
+                    }
+                }
+                else
+                {
+                    Vector2 pos = GetViewport().GetMousePosition();
+                    Color maskColor = m_maskField.GetImage().GetPixel((int)pos.X, (int)pos.Y);
+                    m_currentMushroom.SpawnAnOffspring(pos);
+                    
+                    SetCurrentMushroom(null);
+                    cooldown = 0.2f;
+                }
             }
         }
     }

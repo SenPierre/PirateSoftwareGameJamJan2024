@@ -35,13 +35,14 @@ void fragment() {
 	UVColorHSV.y = 0.0f;
 	vec4 grayScaleUVColor = vec4(hsv2rgb(UVColorHSV), 1.0f);
 			
-	if (maskColor.r > 0.0f || maskColor.g > 0.0f || maskColor.b > 0.0f)
+	if (maskColor.g == 1.0f)
 	{
-		COLOR = vec4(
-			maskColor.r > 0.0f ? UVColor.r : 0.0, 
-			maskColor.g > 0.0f ? UVColor.g : 0.0, 
-			maskColor.b > 0.0f ? UVColor.b : 0.0, 
-			1.0);
+		COLOR = vec4(1.0f,1.0f,1.0f,1.0f) - UVColor;
+		COLOR.a = 1.0f;
+	}
+	else if (maskColor.r == 1.0f)
+	{
+		COLOR = UVColor;
 	}
 	else
 	{

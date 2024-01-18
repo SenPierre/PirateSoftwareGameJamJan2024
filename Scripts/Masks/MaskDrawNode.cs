@@ -4,7 +4,8 @@ using System;
 [Tool]
 public partial class MaskDrawNode : Node2D
 {
-    public float m_radius = 30f;
+    private float m_radius = 30.0f;
+    private Color m_color = new Color(0.0f, 0.0f, 0.0f, 0.0f);
 
     private MaskCalculator m_mask;
 
@@ -44,8 +45,16 @@ public partial class MaskDrawNode : Node2D
     //----------------------------------------------------------
     //
     //----------------------------------------------------------
+    public void UpdateColor(Color newcolor)
+    {
+        m_color = newcolor;
+    }
+
+    //----------------------------------------------------------
+    //
+    //----------------------------------------------------------
     void OnMaskDraw()
     {
-        m_mask.AddMaskDraw(GlobalPosition, m_radius);
+        m_mask.AddMaskDraw(GlobalPosition, m_radius, m_color);
     }
 }

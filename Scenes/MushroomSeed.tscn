@@ -1,0 +1,13 @@
+[gd_scene load_steps=2 format=3 uid="uid://dp8cqqarljwbr"]
+
+[ext_resource type="Script" path="res://Scripts/MushroomSeed.cs" id="1_xli7w"]
+
+[node name="MushroomSeed" type="Node2D" node_paths=PackedStringArray("m_Line")]
+script = ExtResource("1_xli7w")
+m_Speed = 50.0
+m_Line = NodePath("Line2D")
+
+[node name="Line2D" type="Line2D" parent="."]
+points = PackedVector2Array(0, 0, 0, 0)
+width = 5.0
+default_color = Color(0.72549, 0.427451, 0.0980392, 1)

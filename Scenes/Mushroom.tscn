@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=3 uid="uid://b2wsikbiydijw"]
+[gd_scene load_steps=7 format=3 uid="uid://b2wsikbiydijw"]
 
 [ext_resource type="Script" path="res://Scripts/Mushroom.cs" id="1_e5fnt"]
 [ext_resource type="Script" path="res://Scripts/Masks/MaskDrawNode.cs" id="2_y6s1w"]
@@ -8,23 +8,30 @@
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_sa2t7"]
 size = Vector2(30, 30)
 
+[sub_resource type="LabelSettings" id="LabelSettings_0q8ki"]
+font_size = 12
+outline_size = 4
+outline_color = Color(0, 0, 0, 1)
+
 [node name="Mushroom" type="Node2D"]
 texture_filter = 1
 script = ExtResource("1_e5fnt")
+m_baseRadius = 100.0
 
 [node name="Line2D" type="Line2D" parent="."]
+z_index = 1
 points = PackedVector2Array(0, 0, 0, 0)
 width = 5.0
 default_color = Color(0.72549, 0.427451, 0.0980392, 1)
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-self_modulate = Color(0.72549, 0.427451, 0.0980392, 1)
-z_index = 1
-scale = Vector2(0.5, 0.5)
+self_modulate = Color(0.72, 0.42, 0.1, 1)
+z_index = 3
+scale = Vector2(1.875, 1.875)
 texture = ExtResource("3_2pmx4")
 
 [node name="Area2D" type="Area2D" parent="Sprite2D"]
-z_index = 1
+z_index = 5
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Sprite2D/Area2D"]
 shape = SubResource("RectangleShape2D_sa2t7")
@@ -35,5 +42,16 @@ texture = ExtResource("3_7omdv")
 
 [node name="MaskDrawer" type="Node2D" parent="."]
 script = ExtResource("2_y6s1w")
+
+[node name="PowerLabel" type="Label" parent="."]
+self_modulate = Color(1, 1, 1, -2621.52)
+z_index = 10
+offset_left = -30.0
+offset_top = 5.0
+offset_right = 30.0
+offset_bottom = 35.0
+text = "10000"
+label_settings = SubResource("LabelSettings_0q8ki")
+horizontal_alignment = 1
 
 [connection signal="input_event" from="Sprite2D/Area2D" to="." method="InputEvent"]

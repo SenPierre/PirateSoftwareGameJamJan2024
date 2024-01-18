@@ -62,7 +62,10 @@ offset_bottom = 648.0
 mouse_filter = 2
 
 [node name="Mushroom" parent="." instance=ExtResource("2_fwu68")]
-position = Vector2(218, 210)
-m_BaseRadius = 100.0
+position = Vector2(84, 195)
+
+[node name="Mushroom2" parent="." instance=ExtResource("2_fwu68")]
+position = Vector2(317, 198)
+m_BaseKind = 1
 
 [connection signal="input_event" from="MushroomManager/Area2D" to="MushroomManager" method="InputEvent"]
