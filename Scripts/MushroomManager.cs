@@ -5,6 +5,7 @@ using System.Collections.Generic;
 public partial class MushroomManager : Node2D
 {
     public static MushroomManager manager;
+    public const float c_TooCloseToSprout = 20.0f;
     
     [Export] public Texture2D m_maskField;
 
@@ -96,13 +97,13 @@ public partial class MushroomManager : Node2D
     //----------------------------------------------------------
     //
     //----------------------------------------------------------
-    public Mushroom GetNearbyValidMushroom(Mushroom mush)
+    public Mushroom GetNearbyValidMushroom(Mushroom mush, bool mustBeSameType)
     {
         float nearestDistanceSquared = 9999.0f * 9999.0f;
         Mushroom result = null;
         foreach(Mushroom shroom in m_AllMushrooms)
         {
-            if (mush != shroom && mush.IsSameKind(shroom) && shroom.ConnectedToRoot())
+            if (mush != shroom && (mush.IsSameKind(shroom) || mustBeSameType == false) && shroom.ConnectedToRoot())
             {
                 if (mush.CheckIfCanConnect(shroom))
                 {
@@ -150,10 +151,17 @@ public partial class MushroomManager : Node2D
             }
             else if (buttonLeftPressed != 0)
             {
+                if (m_currentMushroom.GetPower() < 200 || m_currentMushroom.GetPrevisionalPower() < 200)
+                {
+                    SetCurrentMushroom(null);
+                    cooldown = 0.2f;
+                    return;
+                }
+
                 Mushroom MushroomFound = null;
                 foreach(Mushroom mush in m_AllMushrooms)
                 {
-                    if (GetViewport().GetMousePosition().DistanceSquaredTo(mush.Position) < 100.0f)
+                    if (GetViewport().GetMousePosition().DistanceSquaredTo(mush.Position) < c_TooCloseToSprout * c_TooCloseToSprout)
                     {
                         MushroomFound = mush;
                         break;

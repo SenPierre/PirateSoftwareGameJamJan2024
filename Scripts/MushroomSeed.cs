@@ -49,6 +49,7 @@ public partial class MushroomSeed : Node2D
             m_parent.SeedEndDeployment();
             newShroom.SetParent(m_parent);
             newShroom.UpdateRadius(m_CarriedRadius, false);
+            newShroom.SetCanGeneratePower(false);
             QueueFree();
         }
     }

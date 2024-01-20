@@ -44,6 +44,10 @@ void fragment() {
 	{
 		COLOR = UVColor;
 	}
+	else if (maskColor.b == 1.0f)
+	{
+		COLOR = grayScaleUVColor - vec4(0.1,0.1,0.1,0);
+	}
 	else
 	{
 		COLOR = grayScaleUVColor;

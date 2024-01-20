@@ -15,12 +15,14 @@ public partial class Mushroom : Node2D
 {
     [Export] public float m_baseRadius;
     [Export] public MushroomKind m_BaseKind;
+    [Export] public Curve m_GenerationCurve;
     
     private MaskDrawNode m_Mask;
     private Sprite2D m_Sprite;
     private Sprite2D m_SelectedSprite;
     private Line2D m_Line2D;
     private Label m_PowerLabel;
+    private Node2D m_Particles;
 
     private bool m_ParentConnectionBroken = false;
 
@@ -37,6 +39,8 @@ public partial class Mushroom : Node2D
     private List<Mushroom> m_Children = new List<Mushroom>();
 
     private List<Mushroom> m_challengers = new List<Mushroom>();
+
+    private bool m_generatePower = true;
 
     private MushroomSeed m_deployedSeed = null;
     private float m_lostPower = 0.0f;
@@ -57,6 +61,7 @@ public partial class Mushroom : Node2D
         m_Sprite = GetNode<Sprite2D>("Sprite2D");
         m_Line2D = GetNode<Line2D>("Line2D");
         m_SelectedSprite = m_Sprite.GetNode<Sprite2D>("Select");
+        m_Particles = m_Sprite.GetNode<Node2D>("CPUParticles2D");
         m_PowerLabel = GetNode<Label>("PowerLabel");
         base._EnterTree();
     }
@@ -77,6 +82,8 @@ public partial class Mushroom : Node2D
         m_isSpawning = true;
         m_SpawningLerp = 0.0f;
         m_TrueSpawningLerp = 0.0f;
+        
+        m_Particles.Visible = m_generatePower;
     }
 
     //----------------------------------------------------------
@@ -95,6 +102,11 @@ public partial class Mushroom : Node2D
         UpdateColor();
         UpdatePowerFluctuating(delta);
 
+        if (m_currentKind == MushroomKind.NEUTRAL && Engine.IsEditorHint() == false)
+        {
+            TryToReconnectToNearbyShroom(false);
+        }
+
         if (m_radius <= 0.0f)
         {
             DEAD();
@@ -105,6 +117,7 @@ public partial class Mushroom : Node2D
             UpdatePowerLabel();
         }
 
+        QueueRedraw();
     }
 
     //----------------------------------------------------------
@@ -144,35 +157,44 @@ public partial class Mushroom : Node2D
     //----------------------------------------------------------
     private void UpdatePowerFluctuating(double delta)
     {
-        float powerToRemove = 0.0f;
+        float powerToAdd = 0.0f;
 
         foreach(Mushroom challenger in m_challengers)
         {
-            powerToRemove += (float)delta * 400.0f;
+            powerToAdd -= (float)delta * 400.0f;
         }
 
         if (m_transferReminding != 0.0f)
         {
             float transferedThisFrame = Math.Min((float)delta * 200.0f, Math.Abs(m_transferReminding)) * Math.Sign(m_transferReminding); 
-            powerToRemove -= transferedThisFrame;
+            powerToAdd += transferedThisFrame;
             m_transferReminding -= transferedThisFrame;
         }
 
+            float currentPower = m_radius * m_radius;
+        if (m_generatePower && m_currentKind != MushroomKind.NEUTRAL && currentPower < 10000.0f )
+        {
+            float generationRate = m_GenerationCurve.Sample(currentPower / 10000.0f);
+            powerToAdd += generationRate * (float) delta;
+        }
+
+/*
         if (ConnectedToRoot() == false && HasChildConnected() == false)
         {
             powerToRemove += (float)delta * 100.0f;
         }
+*/
 
         if (m_deployedSeed != null)
         {
             float newlostPower = m_powerLossFromSeedLerp * m_deployedSeed.m_currentLerp;
-            powerToRemove += newlostPower - m_lostPower;
+            powerToAdd -= newlostPower - m_lostPower;
             m_lostPower = newlostPower;
         }
 
-        if (powerToRemove != 0.0f)
+        if (powerToAdd != 0.0f)
         {
-            float newPower = m_radius * m_radius - powerToRemove;
+            float newPower = m_radius * m_radius + powerToAdd;
             if (newPower <= 0)
             {
                 UpdateRadius(0.0f, true);
@@ -199,15 +221,7 @@ public partial class Mushroom : Node2D
     //----------------------------------------------------------
     private void UpdateColor()
     {
-        if (ConnectedToRoot() == false)
-        {
-            m_Sprite.SelfModulate = new Color(1.0f, 0.0f, 0.0f, 1.0f);
-            TryToReconnectToNearbyShroom();
-        }
-        else
-        {
-            m_Sprite.SelfModulate = IsRoot() ? new Color(0.72f, 0.42f, 0.1f, 1.0f) : new Color(0.52f, 0.22f, 0.0f, 1.0f);
-        }
+        m_Sprite.SelfModulate = IsRoot() ? new Color(0.72f, 0.42f, 0.1f, 1.0f) : new Color(0.32f, 0.12f, 0.0f, 1.0f);
     }
 
     //----------------------------------------------------------
@@ -239,22 +253,63 @@ public partial class Mushroom : Node2D
     //----------------------------------------------------------
     //
     //----------------------------------------------------------
-    void BreakParentConnection()
+    public float GetPower()
     {
-        m_ParentConnectionBroken = true;
-        m_Line2D.Visible = false;
+        return m_radius * m_radius;
     }
 
     //----------------------------------------------------------
     //
     //----------------------------------------------------------
-    void TryToReconnectToNearbyShroom()
+    public float GetPrevisionalPower()
     {
-        Mushroom newParent = MushroomManager.manager.GetNearbyValidMushroom(this);
+        return m_radius * m_radius + m_transferReminding;
+    }
+
+    //----------------------------------------------------------
+    //
+    //----------------------------------------------------------
+    void BreakParentConnection()
+    {
+        m_ParentConnectionBroken = true;
+        m_Line2D.Visible = false;
+        
+        if (TryToReconnectToNearbyShroom(true) == false)
+        {
+            UpdateKind(MushroomKind.NEUTRAL);
+            if (MushroomManager.manager.GetCurrentMushroom() == this)
+            {
+                MushroomManager.manager.SetCurrentMushroom(null); 
+            }
+        }
+
+        foreach(Mushroom child in m_Children)
+        {
+            child.BreakParentConnection();
+        }
+    }
+
+    //----------------------------------------------------------
+    //
+    //----------------------------------------------------------
+    bool TryToReconnectToNearbyShroom(bool mustBeSameType)
+    {
+        Mushroom newParent = MushroomManager.manager.GetNearbyValidMushroom(this, mustBeSameType);
         if (newParent != null)
         {
             SetParent(newParent);
+            return true;
         }
+        return false;
+    }
+
+    //----------------------------------------------------------
+    //
+    //----------------------------------------------------------
+    public void SetCanGeneratePower(bool val)
+    {
+        m_generatePower = val;
+        m_Particles.Visible = val;
     }
 
     //----------------------------------------------------------
@@ -300,6 +355,7 @@ public partial class Mushroom : Node2D
         m_Line2D.SetPointPosition(1, shroom.Position - Position);
         m_ParentConnectionBroken = false;
         m_Parent.m_Children.Add(this);
+        UpdateKind(m_Parent.m_currentKind);
     }
 
     //----------------------------------------------------------
@@ -578,4 +634,25 @@ public partial class Mushroom : Node2D
         UpdateRadius((float)Mathf.Sqrt((double)(m_radius * m_radius - m_powerLossFromSeedLerp + m_lostPower)), true);
         m_deployedSeed = null;
     }
+
+    /*
+    //----------------------------------------------------------
+    //
+    //----------------------------------------------------------
+    public override void _Draw()
+    {
+        
+
+        if (m_Selected)
+        {
+            DrawArc(Vector2.Zero, m_radius - 1.5f, 0.0f, 360.0f, 360, new Color(1,0,0,1), 1.0f);
+        }
+
+        float mouseDist = GetGlobalMousePosition().DistanceTo(Position);
+        if (mouseDist < MushroomManager.c_TooCloseToSprout + 10.0f);
+        {
+            float alpha = Mathf.Min(1.0f, (MushroomManager.c_TooCloseToSprout + 10.0f - mouseDist) / 10.0f);
+            DrawArc(Vector2.Zero, MushroomManager.c_TooCloseToSprout, 0.0f, 360.0f, 60, new Color(1,0,0,alpha), 1.0f);
+        }
+    }*/
 }

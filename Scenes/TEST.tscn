@@ -1,10 +1,11 @@
-[gd_scene load_steps=10 format=3 uid="uid://d1qbp8se1hame"]
+[gd_scene load_steps=11 format=3 uid="uid://d1qbp8se1hame"]
 
 [ext_resource type="Script" path="res://Scripts/MushroomManager.cs" id="1_ern85"]
 [ext_resource type="TileSet" uid="uid://bc8q455d1ebx1" path="res://Resources/Tileset/Tileset1.tres" id="1_kgbkb"]
 [ext_resource type="Script" path="res://Scripts/Masks/MaskCalculator.cs" id="2_1v4q8"]
 [ext_resource type="PackedScene" uid="uid://b2wsikbiydijw" path="res://Scenes/Mushroom.tscn" id="2_fwu68"]
 [ext_resource type="Shader" path="res://Shaders/GrayScaleMask.gdshader" id="4_bru1o"]
+[ext_resource type="Script" path="res://Scripts/MushroomAI.cs" id="6_auimo"]
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_q03wb"]
 viewport_path = NodePath("SubViewport")
@@ -62,10 +63,18 @@ offset_bottom = 648.0
 mouse_filter = 2
 
 [node name="Mushroom" parent="." instance=ExtResource("2_fwu68")]
-position = Vector2(84, 195)
+position = Vector2(55, 195)
 
 [node name="Mushroom2" parent="." instance=ExtResource("2_fwu68")]
-position = Vector2(317, 198)
+position = Vector2(279, 241)
 m_BaseKind = 1
+
+[node name="Mushroom3" parent="." instance=ExtResource("2_fwu68")]
+position = Vector2(235, 33)
+m_baseRadius = 50.0
+m_BaseKind = 3
+
+[node name="MushroomAI" type="Node2D" parent="."]
+script = ExtResource("6_auimo")
 
 [connection signal="input_event" from="MushroomManager/Area2D" to="MushroomManager" method="InputEvent"]
