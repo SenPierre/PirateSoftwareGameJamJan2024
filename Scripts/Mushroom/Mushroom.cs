@@ -241,7 +241,9 @@ public partial class Mushroom : Node2D
     //----------------------------------------------------------
     private void UpdateColor()
     {
-        m_Sprite.SelfModulate = IsRoot() ? new Color(0.72f, 0.42f, 0.1f, 1.0f) : new Color(0.32f, 0.12f, 0.0f, 1.0f);
+        m_Sprite.SelfModulate = IsRoot() == false 
+            ? new Color(0.72f, 0.42f, 0.1f, 1.0f) 
+            : new Color(0.22f, 0.12f, 0.0f, 1.0f);
 
 
         if (m_Mask != null) // set of members are done before the _ready.so we need to test the mask validity

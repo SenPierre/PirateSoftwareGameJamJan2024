@@ -16,10 +16,10 @@
 [ext_resource type="Texture2D" uid="uid://igtac8rsavk1" path="res://Textures/GameOver.png" id="13_mopdq"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_la6ye"]
-size = Vector2(1152, 648)
+size = Vector2(576, 324)
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_stkss"]
-viewport_path = NodePath("SubViewport")
+viewport_path = NodePath("ViewPortMask")
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_dk7wi"]
 resource_local_to_scene = true
@@ -244,26 +244,26 @@ script = ExtResource("3_pafbj")
 [node name="Area2D" type="Area2D" parent="."]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
-position = Vector2(576, 324)
+position = Vector2(288, 162)
 shape = SubResource("RectangleShape2D_la6ye")
 
-[node name="SubViewport" type="SubViewport" parent="."]
-size = Vector2i(1152, 648)
+[node name="ViewPortMask" type="SubViewport" parent="."]
+size = Vector2i(576, 324)
 
-[node name="ColorRect" type="ColorRect" parent="SubViewport"]
+[node name="ColorRect" type="ColorRect" parent="ViewPortMask"]
 offset_right = 1152.0
 offset_bottom = 648.0
 color = Color(0, 0, 0, 1)
 
-[node name="Mask" type="Node2D" parent="SubViewport"]
+[node name="Mask" type="Node2D" parent="ViewPortMask"]
 script = ExtResource("4_3okrv")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
 [node name="ColorRect" type="ColorRect" parent="CanvasLayer"]
 material = SubResource("ShaderMaterial_dk7wi")
-offset_right = 1152.0
-offset_bottom = 648.0
+offset_right = 576.0
+offset_bottom = 324.0
 mouse_filter = 2
 
 [node name="PauseButton" type="TextureRect" parent="CanvasLayer" node_paths=PackedStringArray("anim")]
@@ -343,6 +343,7 @@ libraries = {
 
 [node name="GameOver" type="TextureRect" parent="CanvasLayer/PauseScreen"]
 visible = false
+layout_mode = 0
 offset_left = 177.0
 offset_top = 46.0
 offset_right = 251.0

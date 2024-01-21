@@ -28,6 +28,12 @@ public partial class MaskCalculator : Node2D
         calculator = this;
     }
 
+    public override void _Ready()
+    {
+        base._Ready();
+        GetParent<SubViewport>().RenderTargetUpdateMode = SubViewport.UpdateMode.WhenParentVisible;
+    }
+
     //----------------------------------------------------------
     //
     //----------------------------------------------------------
