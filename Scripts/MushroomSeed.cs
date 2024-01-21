@@ -45,7 +45,7 @@ public partial class MushroomSeed : Node2D
                 newShroom.m_baseRadius = m_CarriedRadius;
                 newShroom.m_BaseKind = m_parent.GetCurrentKind();
                 m_parent.AddSibling(newShroom);
-                m_parent.SeedEndDeployment();
+                m_parent.SeedEndDeployment(true);
                 newShroom.SetParent(m_parent);
                 newShroom.UpdateRadius(m_CarriedRadius, false);
                 newShroom.SetCanGeneratePower(false);
@@ -58,8 +58,7 @@ public partial class MushroomSeed : Node2D
             m_currentLerp -= m_lerpSpeed * (float)delta;
             if (m_currentLerp <= 0.0f)
             {
-                m_parent.SeedEndDeployment();
-                m_parent.Transfer(m_CarriedRadius * m_CarriedRadius);
+                m_parent.SeedEndDeployment(false);
                 QueueFree();
             }
         }

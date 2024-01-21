@@ -738,9 +738,17 @@ public partial class Mushroom : Node2D
     //----------------------------------------------------------
     //
     //----------------------------------------------------------
-    public void SeedEndDeployment()
+    public void SeedEndDeployment(bool result)
     {
-        UpdateRadius((float)Mathf.Sqrt((double)(m_radius * m_radius - m_powerLossFromSeedLerp + m_lostPower)), true);
+        if (result)
+        {
+            UpdateRadius((float)Mathf.Sqrt((double)(m_radius * m_radius - m_powerLossFromSeedLerp + m_lostPower)), true);
+        }
+        else
+        {
+            UpdateRadius((float)Mathf.Sqrt((double)(m_radius * m_radius + m_lostPower)), true);
+        }
+
         m_deployedSeed = null;
     }
 

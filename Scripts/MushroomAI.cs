@@ -17,7 +17,7 @@ public partial class MushroomAI : Node2D
     public override void _Process(double delta)
     {
         base._Process(delta);
-        //m_BT.Update();
+        m_BT.Update();
     }
 
     public void SetupBehaviorTree()
