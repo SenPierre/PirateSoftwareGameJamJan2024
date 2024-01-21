@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using System.Security.Cryptography.X509Certificates;
 
 public partial class MushroomManager : Node2D
 {
@@ -14,6 +15,7 @@ public partial class MushroomManager : Node2D
 
     public List<Mushroom> m_RootMushrooms = new List<Mushroom>();
     public List<Mushroom> m_AllMushrooms = new List<Mushroom>();
+    public List<Node2D> m_ToRemove = new List<Node2D>();
 
     //----------------------------------------------------------
     //
@@ -33,6 +35,12 @@ public partial class MushroomManager : Node2D
         {
             cooldown -= (float)delta;
         }
+        
+        foreach(Node2D dead in m_ToRemove)
+        {
+            RemoveChild(dead);
+        }
+        m_ToRemove.Clear();
     }
 
     //----------------------------------------------------------
@@ -87,11 +95,46 @@ public partial class MushroomManager : Node2D
     //----------------------------------------------------------
     public void RemoveShroom(Mushroom mush)
     {
+        m_ToRemove.Add(mush);
         m_AllMushrooms.Remove(mush);
         if (mush.IsRoot())
         {
             m_RootMushrooms.Remove(mush);
         }
+    }
+
+    //----------------------------------------------------------
+    //
+    //----------------------------------------------------------
+    public Mushroom CheckMushroomCloseness(Vector2 referencial)
+    {
+        foreach(Mushroom shroom in m_AllMushrooms)
+        {
+            float distSquared = referencial.DistanceSquaredTo(shroom.GlobalPosition); 
+            if (distSquared < c_TooCloseToSprout * c_TooCloseToSprout)
+            {
+                return shroom;
+            }
+        }
+
+        return null;
+    }
+
+    //----------------------------------------------------------
+    //
+    //----------------------------------------------------------
+    public List<Mushroom> GetAllMushroomOfAKind(MushroomKind kind)
+    {
+        List<Mushroom> shroomList = new List<Mushroom>();
+        foreach(Mushroom shroom in m_AllMushrooms)
+        {
+            if (shroom.GetCurrentKind() == kind)
+            {
+                shroomList.Add(shroom);
+            }
+        }
+
+        return shroomList;
     }
 
     //----------------------------------------------------------
@@ -158,31 +201,18 @@ public partial class MushroomManager : Node2D
                     return;
                 }
 
-                Mushroom MushroomFound = null;
-                foreach(Mushroom mush in m_AllMushrooms)
-                {
-                    if (GetViewport().GetMousePosition().DistanceSquaredTo(mush.Position) < c_TooCloseToSprout * c_TooCloseToSprout)
-                    {
-                        MushroomFound = mush;
-                        break;
-                    }
-                }
+                Mushroom MushroomFound = CheckMushroomCloseness(GetViewport().GetMousePosition());
 
                 if (MushroomFound != null)
                 {
-                    List<Mushroom> path = new List<Mushroom>();
-                    if (MushroomFound.FindMushroomPath(GetCurrentMushroom(), ref path))
+                    if (m_currentMushroom.WillLooseConnexionIfTransfer() == false)
                     {
-                        PackedScene shroomPrefab = ResourceLoader.Load<PackedScene>("res://Scenes/MushroomPowerTransfer.tscn");
-                    
-                        MushroomPowerTransfer transfer = shroomPrefab.Instantiate<MushroomPowerTransfer>();
-                        transfer.m_Path = path;
-                        transfer.Position = GetCurrentMushroom().Position;
-                        transfer.m_PowerTransfered = 100.0f;
-                        AddSibling(transfer);
-                        m_currentMushroom.Transfer(-100.0f);
-
+                        m_currentMushroom.TransferToOther(MushroomFound);
                         cooldown = 0.2f;
+                    }
+                    else
+                    {
+                        SetCurrentMushroom(null);
                     }
                 }
                 else

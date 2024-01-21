@@ -34,24 +34,19 @@ void fragment() {
 	vec3 UVColorHSV = rgb2hsv(UVColor.xyz);
 	UVColorHSV.y = 0.0f;
 	vec4 grayScaleUVColor = vec4(hsv2rgb(UVColorHSV), 1.0f);
+	
+	vec4 mushColor = grayScaleUVColor;
 			
 	if (maskColor.g == 1.0f)
 	{
-		COLOR = vec4(1.0f,1.0f,1.0f,1.0f) - UVColor;
-		COLOR.a = 1.0f;
+		mushColor = vec4(1.0f,1.0f,1.0f,1.0f) - UVColor;
+		mushColor.a = 1.0f;
 	}
 	else if (maskColor.r == 1.0f)
 	{
-		COLOR = UVColor;
-	}
-	else if (maskColor.b == 1.0f)
-	{
-		COLOR = grayScaleUVColor - vec4(0.1,0.1,0.1,0);
-	}
-	else
-	{
-		COLOR = grayScaleUVColor;
+		mushColor = UVColor;
 	}
 	
-	
+	vec4 grayScaleColor = grayScaleUVColor - vec4(0.1,0.1,0.1,0);
+	COLOR = mix(mushColor, grayScaleColor, maskColor.b);	
 }
