@@ -36,7 +36,7 @@ public class TargetSelectSproutNearestOther : TargetSelectSprout
             }
         }
 
-        if (targetSquaredDistance < 999999.0f)
+        if (target != null)
         {
             float targetDistance = Mathf.Sqrt(targetSquaredDistance);
             float maxDistSprout = src.GetRadius();

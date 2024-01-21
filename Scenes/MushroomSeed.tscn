@@ -1,9 +1,9 @@
-[gd_scene load_steps=2 format=3 uid="uid://dp8cqqarljwbr"]
+[gd_scene load_steps=2 format=3 uid="uid://4jbleoyhdt73"]
 
-[ext_resource type="Script" path="res://Scripts/MushroomSeed.cs" id="1_xli7w"]
+[ext_resource type="Script" path="res://Scripts/Mushroom/MushroomSeed.cs" id="1_g3yjr"]
 
 [node name="MushroomSeed" type="Node2D" node_paths=PackedStringArray("m_Line")]
-script = ExtResource("1_xli7w")
+script = ExtResource("1_g3yjr")
 m_Speed = 50.0
 m_Line = NodePath("Line2D")
 

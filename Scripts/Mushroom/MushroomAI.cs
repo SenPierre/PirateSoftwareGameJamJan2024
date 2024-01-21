@@ -31,7 +31,10 @@ public partial class MushroomAI : Node2D
                     )
                 ),
                 new TaskConditionnalCooldown(0.5f, 
-                    new TaskTransferEnergy(new TargetSelectLargestToSmallest(this))
+                    new TaskSelector(
+                        new TaskTransferEnergy(new TargetSelectTransferToNearestOther(MushroomKind.NEUTRAL, this)),
+                        new TaskTransferEnergy(new TargetSelectTransferToNearestOther(MushroomKind.GOOD, this))
+                    )
                 )
             );
     }

@@ -84,13 +84,15 @@ public partial class Mushroom : Node2D
     public override void _Ready()
     {
         base._Ready();
+
+        SetSelected(false);
+        UpdateKind(m_BaseKind);
+        UpdateRadius(m_baseRadius, false);
+
         if (Engine.IsEditorHint() == false)
         {
             MushroomManager.manager.AddShroom(this);
         }
-        SetSelected(false);
-        UpdateKind(m_BaseKind);
-        UpdateRadius(m_baseRadius, false);
         m_isSpawning = true;
         m_SpawningLerp = 0.0f;
         m_TrueSpawningLerp = 0.0f;
@@ -110,9 +112,15 @@ public partial class Mushroom : Node2D
             return;
         }
 
-        UpdateSpawning(delta);
+        float trueDelta = 0.0f;
+        if (TimeManager.GetManager() != null)
+        {
+            trueDelta = TimeManager.GetDeltaTime();
+        }
+
+        UpdateSpawning(trueDelta);
         UpdateColor();
-        UpdatePowerFluctuating(delta);
+        UpdatePowerFluctuating(trueDelta);
 
         if (m_radius <= 2.0f)
         {
@@ -120,7 +128,7 @@ public partial class Mushroom : Node2D
         }
         else
         {
-            m_ShowPowerCooldown -= (float) delta;
+            m_ShowPowerCooldown -= trueDelta;
             UpdatePowerLabel();
         }
 
@@ -317,8 +325,9 @@ public partial class Mushroom : Node2D
             }
         }
 
-        foreach(Mushroom child in m_Children)
+        for( int i = m_Children.Count - 1; i >= 0; i--)
         {
+            Mushroom child = m_Children[i];
             child.BreakParentConnection();
         }
     }
@@ -370,7 +379,15 @@ public partial class Mushroom : Node2D
     //----------------------------------------------------------
     public bool IsRoot()
     {
-        return m_Parent == null;
+        return m_Parent == null && m_currentKind != MushroomKind.NEUTRAL;
+    }
+
+    //----------------------------------------------------------
+    //
+    //----------------------------------------------------------
+    public void PresetParent(Mushroom shroom)
+    {
+        m_Parent = shroom;
     }
 
     //----------------------------------------------------------
@@ -431,8 +448,9 @@ public partial class Mushroom : Node2D
     //----------------------------------------------------------
     private void CheckChildrenConnection()
     {
-        foreach(Mushroom child in m_Children)
+        for( int i = m_Children.Count - 1; i >= 0; i--)
         {
+            Mushroom child = m_Children[i];
             child.CheckParentConnection();
         }
     }

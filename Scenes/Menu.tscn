@@ -1,0 +1,408 @@
+[gd_scene load_steps=28 format=3 uid="uid://blph2c0jfcf7k"]
+
+[ext_resource type="Shader" path="res://Shaders/TitleShader.gdshader" id="1_1rvas"]
+[ext_resource type="Script" path="res://Scripts/MenuManager.cs" id="1_hosgp"]
+[ext_resource type="Texture2D" uid="uid://c8obym0eclfs7" path="res://Textures/Title.png" id="1_yin4o"]
+[ext_resource type="Texture2D" uid="uid://troidcpacuxl" path="res://Textures/JAM.png" id="4_ras2l"]
+[ext_resource type="Texture2D" uid="uid://b6x5oryfpj6pa" path="res://Textures/Start.png" id="5_sy6gl"]
+[ext_resource type="Texture2D" uid="uid://c4jt56q2t0lka" path="res://Textures/Quit.png" id="6_pded7"]
+[ext_resource type="Texture2D" uid="uid://bvansg2gyr1ku" path="res://Textures/Selection.png" id="6_svdh0"]
+[ext_resource type="Script" path="res://Scripts/MenuButton.cs" id="6_winnr"]
+[ext_resource type="Texture2D" uid="uid://d1x48a07xofnc" path="res://Textures/Return.png" id="9_sp0m0"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_7h35h"]
+shader = ExtResource("1_1rvas")
+
+[sub_resource type="Animation" id="Animation_chlo3"]
+resource_name = "Idle"
+length = 0.4
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0]
+}
+
+[sub_resource type="Animation" id="Animation_t0dbt"]
+resource_name = "Over"
+length = 0.4
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 0,
+"values": [0.0, 0.174533, 0.0, -0.174533, 0.0]
+}
+
+[sub_resource type="Animation" id="Animation_66a3i"]
+resource_name = "Selected"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0]
+}
+tracks/1/type = "method"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("../..")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": [],
+"method": &"DisplayJam"
+}]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_umo3r"]
+_data = {
+"Idle": SubResource("Animation_chlo3"),
+"Over": SubResource("Animation_t0dbt"),
+"Selected": SubResource("Animation_66a3i")
+}
+
+[sub_resource type="Animation" id="Animation_iqp1p"]
+resource_name = "Idle"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("SelectionPlay:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+
+[sub_resource type="Animation" id="Animation_0poeh"]
+resource_name = "Over"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("SelectionPlay:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+
+[sub_resource type="Animation" id="Animation_gqqcu"]
+resource_name = "Selected"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("SelectionPlay:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/1/type = "method"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("../..")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": [],
+"method": &"StartGame"
+}]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_n5ovb"]
+_data = {
+"Idle": SubResource("Animation_iqp1p"),
+"Over": SubResource("Animation_0poeh"),
+"Selected": SubResource("Animation_gqqcu")
+}
+
+[sub_resource type="Animation" id="Animation_l6jo2"]
+resource_name = "Idle"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("SelectionQuit:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+
+[sub_resource type="Animation" id="Animation_vv2e7"]
+resource_name = "Over"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("SelectionQuit:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+
+[sub_resource type="Animation" id="Animation_2cwop"]
+resource_name = "Selected"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("SelectionQuit:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/1/type = "method"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("../..")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": [],
+"method": &"QuitGame"
+}]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_j8xii"]
+_data = {
+"Idle": SubResource("Animation_l6jo2"),
+"Over": SubResource("Animation_vv2e7"),
+"Selected": SubResource("Animation_2cwop")
+}
+
+[sub_resource type="Animation" id="Animation_0o2mw"]
+resource_name = "Idle"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:self_modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(0, 0, 0, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_jkvo5"]
+resource_name = "Over"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:self_modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_5msku"]
+resource_name = "Selected"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:self_modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(0, 0, 0, 1)]
+}
+tracks/1/type = "method"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("../..")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": [],
+"method": &"HideJam"
+}]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_6xi1s"]
+_data = {
+"Idle": SubResource("Animation_0o2mw"),
+"Over": SubResource("Animation_jkvo5"),
+"Selected": SubResource("Animation_5msku")
+}
+
+[sub_resource type="LabelSettings" id="LabelSettings_25ifb"]
+font_color = Color(0, 0, 0, 1)
+
+[node name="Menu" type="Node2D" node_paths=PackedStringArray("mainPanel", "jamPanel")]
+texture_filter = 1
+script = ExtResource("1_hosgp")
+mainPanel = NodePath("MainPanel")
+jamPanel = NodePath("JamPanel")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+offset_right = 576.0
+offset_bottom = 324.0
+color = Color(0.47451, 0.745098, 0.286275, 1)
+
+[node name="MainPanel" type="Node2D" parent="."]
+
+[node name="Title" type="TextureRect" parent="MainPanel"]
+texture_filter = 1
+material = SubResource("ShaderMaterial_7h35h")
+offset_left = 88.0
+offset_top = 41.0
+offset_right = 488.0
+offset_bottom = 121.0
+texture = ExtResource("1_yin4o")
+
+[node name="TextureRect2" type="TextureRect" parent="MainPanel" node_paths=PackedStringArray("anim")]
+z_index = 1
+offset_left = 195.0
+offset_top = 22.0
+offset_right = 825.0
+offset_bottom = 522.0
+scale = Vector2(0.2, 0.2)
+pivot_offset = Vector2(315, 250)
+texture = ExtResource("4_ras2l")
+script = ExtResource("6_winnr")
+anim = NodePath("JamAnimationPlayer")
+
+[node name="JamAnimationPlayer" type="AnimationPlayer" parent="MainPanel/TextureRect2"]
+libraries = {
+"": SubResource("AnimationLibrary_umo3r")
+}
+
+[node name="TextureRect" type="TextureRect" parent="MainPanel" node_paths=PackedStringArray("anim")]
+offset_left = 224.0
+offset_top = 136.0
+offset_right = 288.0
+offset_bottom = 176.0
+scale = Vector2(2, 2)
+texture = ExtResource("5_sy6gl")
+script = ExtResource("6_winnr")
+anim = NodePath("PlayAnimationPlayer")
+
+[node name="SelectionPlay" type="TextureRect" parent="MainPanel/TextureRect"]
+visible = false
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+texture = ExtResource("6_svdh0")
+
+[node name="PlayAnimationPlayer" type="AnimationPlayer" parent="MainPanel/TextureRect"]
+libraries = {
+"": SubResource("AnimationLibrary_n5ovb")
+}
+
+[node name="TextureRect3" type="TextureRect" parent="MainPanel" node_paths=PackedStringArray("anim")]
+offset_left = 224.0
+offset_top = 218.0
+offset_right = 288.0
+offset_bottom = 258.0
+scale = Vector2(2, 2)
+texture = ExtResource("6_pded7")
+script = ExtResource("6_winnr")
+anim = NodePath("QuitAnimationPlayer")
+
+[node name="SelectionQuit" type="TextureRect" parent="MainPanel/TextureRect3"]
+visible = false
+layout_mode = 0
+offset_right = 64.0
+offset_bottom = 40.0
+texture = ExtResource("6_svdh0")
+
+[node name="QuitAnimationPlayer" type="AnimationPlayer" parent="MainPanel/TextureRect3"]
+libraries = {
+"": SubResource("AnimationLibrary_j8xii")
+}
+
+[node name="JamPanel" type="Node2D" parent="."]
+visible = false
+
+[node name="TextureRect" type="TextureRect" parent="JamPanel" node_paths=PackedStringArray("anim")]
+self_modulate = Color(0, 0, 0, 1)
+offset_left = 528.0
+offset_top = 276.0
+offset_right = 568.0
+offset_bottom = 316.0
+texture = ExtResource("9_sp0m0")
+script = ExtResource("6_winnr")
+anim = NodePath("AnimationPlayer")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="JamPanel/TextureRect"]
+libraries = {
+"": SubResource("AnimationLibrary_6xi1s")
+}
+
+[node name="Label" type="Label" parent="JamPanel"]
+offset_top = 59.0
+offset_right = 576.0
+offset_bottom = 209.0
+text = "TODO (SOON)"
+label_settings = SubResource("LabelSettings_25ifb")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[connection signal="gui_input" from="MainPanel/TextureRect2" to="MainPanel/TextureRect2" method="OnClick"]
+[connection signal="mouse_entered" from="MainPanel/TextureRect2" to="MainPanel/TextureRect2" method="OnEnter"]
+[connection signal="mouse_exited" from="MainPanel/TextureRect2" to="MainPanel/TextureRect2" method="OnExit"]
+[connection signal="gui_input" from="MainPanel/TextureRect" to="MainPanel/TextureRect" method="OnClick"]
+[connection signal="mouse_entered" from="MainPanel/TextureRect" to="MainPanel/TextureRect" method="OnEnter"]
+[connection signal="mouse_exited" from="MainPanel/TextureRect" to="MainPanel/TextureRect" method="OnExit"]
+[connection signal="gui_input" from="MainPanel/TextureRect3" to="MainPanel/TextureRect3" method="OnClick"]
+[connection signal="mouse_entered" from="MainPanel/TextureRect3" to="MainPanel/TextureRect3" method="OnEnter"]
+[connection signal="mouse_exited" from="MainPanel/TextureRect3" to="MainPanel/TextureRect3" method="OnExit"]
+[connection signal="gui_input" from="JamPanel/TextureRect" to="JamPanel/TextureRect" method="OnClick"]
+[connection signal="mouse_entered" from="JamPanel/TextureRect" to="JamPanel/TextureRect" method="OnEnter"]
+[connection signal="mouse_exited" from="JamPanel/TextureRect" to="JamPanel/TextureRect" method="OnExit"]

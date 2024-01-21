@@ -6,7 +6,11 @@ public class TaskConditionnalCooldown : TaskConditionnal
     private float m_TimerCount;
     private float m_TimerCooldown = 0.0f;
 
-    public TaskConditionnalCooldown(float timer, Task subtask) : base(subtask) {m_TimerCount = timer; }
+    public TaskConditionnalCooldown(float timer, Task subtask) : base(subtask) 
+    {
+        m_TimerCount = timer; 
+        m_TimerCooldown = timer;
+    }
 
     public override bool CheckCondition()
     {

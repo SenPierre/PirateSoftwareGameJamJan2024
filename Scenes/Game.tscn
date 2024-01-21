@@ -1,0 +1,376 @@
+[gd_scene load_steps=30 format=3 uid="uid://6wo1c0hxd8vt"]
+
+[ext_resource type="Script" path="res://Scripts/Mushroom/MushroomManager.cs" id="1_hljsn"]
+[ext_resource type="Script" path="res://Scripts/TimeManager.cs" id="2_l8wej"]
+[ext_resource type="Script" path="res://Scripts/RandomManager.cs" id="3_pafbj"]
+[ext_resource type="Script" path="res://Scripts/Masks/MaskCalculator.cs" id="4_3okrv"]
+[ext_resource type="Shader" path="res://Shaders/GrayScaleMask.gdshader" id="5_5tsgb"]
+[ext_resource type="Script" path="res://Scripts/Mushroom/MushroomAI.cs" id="6_bd8l0"]
+[ext_resource type="Texture2D" uid="uid://snvyebuekj7o" path="res://Textures/PauseButton.png" id="6_tw2aj"]
+[ext_resource type="Script" path="res://Scripts/MenuButton.cs" id="7_3cnas"]
+[ext_resource type="Texture2D" uid="uid://b1f3enjmdg6gh" path="res://Textures/PauseButtonOver.png" id="7_p44w8"]
+[ext_resource type="Texture2D" uid="uid://dx6g58uoekal2" path="res://Textures/Resume.png" id="8_ybvnn"]
+[ext_resource type="Texture2D" uid="uid://bvansg2gyr1ku" path="res://Textures/Selection.png" id="9_mdp5n"]
+[ext_resource type="Texture2D" uid="uid://c4jt56q2t0lka" path="res://Textures/Quit.png" id="10_q2vaw"]
+[ext_resource type="Texture2D" uid="uid://vp4qc5cabyo7" path="res://Textures/Victory.png" id="12_agund"]
+[ext_resource type="Texture2D" uid="uid://igtac8rsavk1" path="res://Textures/GameOver.png" id="13_mopdq"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_la6ye"]
+size = Vector2(1152, 648)
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_stkss"]
+viewport_path = NodePath("SubViewport")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_dk7wi"]
+resource_local_to_scene = true
+shader = ExtResource("5_5tsgb")
+shader_parameter/NodePos = null
+shader_parameter/NodePos2 = null
+shader_parameter/radius = null
+shader_parameter/mask = SubResource("ViewportTexture_stkss")
+
+[sub_resource type="Animation" id="Animation_45en1"]
+resource_name = "Idle"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("TextureRect:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+
+[sub_resource type="Animation" id="Animation_5g1b8"]
+resource_name = "Over"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("TextureRect:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+
+[sub_resource type="Animation" id="Animation_71abd"]
+resource_name = "Selected"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("TextureRect:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/1/type = "method"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("../..")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": [],
+"method": &"Pause"
+}]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_n6r3f"]
+_data = {
+"Idle": SubResource("Animation_45en1"),
+"Over": SubResource("Animation_5g1b8"),
+"Selected": SubResource("Animation_71abd")
+}
+
+[sub_resource type="Animation" id="Animation_r4sh7"]
+resource_name = "Idle"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("TextureRect:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+
+[sub_resource type="Animation" id="Animation_fjpmo"]
+resource_name = "Over"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("TextureRect:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+
+[sub_resource type="Animation" id="Animation_ae2gs"]
+resource_name = "Selected"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("TextureRect:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/1/type = "method"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("../../..")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": [],
+"method": &"EndPause"
+}]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_ih0qt"]
+_data = {
+"Idle": SubResource("Animation_r4sh7"),
+"Over": SubResource("Animation_fjpmo"),
+"Selected": SubResource("Animation_ae2gs")
+}
+
+[sub_resource type="Animation" id="Animation_8e5a3"]
+resource_name = "Idle"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("TextureRect:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+
+[sub_resource type="Animation" id="Animation_y8wwh"]
+resource_name = "Over"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("TextureRect:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+
+[sub_resource type="Animation" id="Animation_ymfqa"]
+resource_name = "Selected"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("TextureRect:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/1/type = "method"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("../../..")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": [],
+"method": &"Quit"
+}]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_w218l"]
+_data = {
+"Idle": SubResource("Animation_8e5a3"),
+"Over": SubResource("Animation_y8wwh"),
+"Selected": SubResource("Animation_ymfqa")
+}
+
+[node name="MushroomManager" type="Node2D" node_paths=PackedStringArray("PauseScreen", "ResumeButton", "VictoryPanel", "GameOverPanel")]
+texture_filter = 1
+script = ExtResource("1_hljsn")
+PauseScreen = NodePath("CanvasLayer/PauseScreen")
+ResumeButton = NodePath("CanvasLayer/PauseScreen/Resume")
+VictoryPanel = NodePath("CanvasLayer/PauseScreen/Victory")
+GameOverPanel = NodePath("CanvasLayer/PauseScreen/GameOver")
+
+[node name="TimeManager" type="Node2D" parent="."]
+script = ExtResource("2_l8wej")
+
+[node name="RandomManager" type="Node2D" parent="."]
+script = ExtResource("3_pafbj")
+
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+position = Vector2(576, 324)
+shape = SubResource("RectangleShape2D_la6ye")
+
+[node name="SubViewport" type="SubViewport" parent="."]
+size = Vector2i(1152, 648)
+
+[node name="ColorRect" type="ColorRect" parent="SubViewport"]
+offset_right = 1152.0
+offset_bottom = 648.0
+color = Color(0, 0, 0, 1)
+
+[node name="Mask" type="Node2D" parent="SubViewport"]
+script = ExtResource("4_3okrv")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="ColorRect" type="ColorRect" parent="CanvasLayer"]
+material = SubResource("ShaderMaterial_dk7wi")
+offset_right = 1152.0
+offset_bottom = 648.0
+mouse_filter = 2
+
+[node name="PauseButton" type="TextureRect" parent="CanvasLayer" node_paths=PackedStringArray("anim")]
+texture_filter = 1
+offset_right = 40.0
+offset_bottom = 40.0
+texture = ExtResource("6_tw2aj")
+script = ExtResource("7_3cnas")
+anim = NodePath("AnimationPlayerPause")
+
+[node name="TextureRect" type="TextureRect" parent="CanvasLayer/PauseButton"]
+visible = false
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+texture = ExtResource("7_p44w8")
+
+[node name="AnimationPlayerPause" type="AnimationPlayer" parent="CanvasLayer/PauseButton"]
+libraries = {
+"": SubResource("AnimationLibrary_n6r3f")
+}
+
+[node name="PauseScreen" type="ColorRect" parent="CanvasLayer"]
+visible = false
+texture_filter = 1
+offset_right = 576.0
+offset_bottom = 324.0
+color = Color(0.203922, 0.203922, 0.203922, 0.368627)
+
+[node name="Resume" type="TextureRect" parent="CanvasLayer/PauseScreen" node_paths=PackedStringArray("anim")]
+visible = false
+layout_mode = 0
+offset_left = 220.0
+offset_top = 54.0
+offset_right = 288.0
+offset_bottom = 94.0
+scale = Vector2(2, 2)
+texture = ExtResource("8_ybvnn")
+script = ExtResource("7_3cnas")
+anim = NodePath("AnimationPlayerResume")
+
+[node name="TextureRect" type="TextureRect" parent="CanvasLayer/PauseScreen/Resume"]
+visible = false
+layout_mode = 0
+offset_left = 2.0
+offset_right = 66.0
+offset_bottom = 40.0
+texture = ExtResource("9_mdp5n")
+
+[node name="AnimationPlayerResume" type="AnimationPlayer" parent="CanvasLayer/PauseScreen/Resume"]
+libraries = {
+"": SubResource("AnimationLibrary_ih0qt")
+}
+
+[node name="Quit" type="TextureRect" parent="CanvasLayer/PauseScreen" node_paths=PackedStringArray("anim")]
+layout_mode = 0
+offset_left = 224.0
+offset_top = 183.0
+offset_right = 288.0
+offset_bottom = 223.0
+scale = Vector2(2, 2)
+texture = ExtResource("10_q2vaw")
+script = ExtResource("7_3cnas")
+anim = NodePath("AnimationPlayerQuit")
+
+[node name="TextureRect" type="TextureRect" parent="CanvasLayer/PauseScreen/Quit"]
+visible = false
+layout_mode = 0
+offset_right = 64.0
+offset_bottom = 40.0
+texture = ExtResource("9_mdp5n")
+
+[node name="AnimationPlayerQuit" type="AnimationPlayer" parent="CanvasLayer/PauseScreen/Quit"]
+libraries = {
+"": SubResource("AnimationLibrary_w218l")
+}
+
+[node name="GameOver" type="TextureRect" parent="CanvasLayer/PauseScreen"]
+visible = false
+offset_left = 177.0
+offset_top = 46.0
+offset_right = 251.0
+offset_bottom = 86.0
+scale = Vector2(3, 3)
+texture = ExtResource("13_mopdq")
+
+[node name="Victory" type="TextureRect" parent="CanvasLayer/PauseScreen"]
+visible = false
+layout_mode = 0
+offset_left = 177.0
+offset_top = 55.0
+offset_right = 251.0
+offset_bottom = 95.0
+scale = Vector2(3, 3)
+texture = ExtResource("12_agund")
+
+[node name="MushroomAI" type="Node2D" parent="."]
+script = ExtResource("6_bd8l0")
+m_AIKind = 1
+
+[connection signal="input_event" from="Area2D" to="." method="InputEvent"]
+[connection signal="gui_input" from="CanvasLayer/PauseButton" to="CanvasLayer/PauseButton" method="OnClick"]
+[connection signal="mouse_entered" from="CanvasLayer/PauseButton" to="CanvasLayer/PauseButton" method="OnEnter"]
+[connection signal="mouse_exited" from="CanvasLayer/PauseButton" to="CanvasLayer/PauseButton" method="OnExit"]
+[connection signal="gui_input" from="CanvasLayer/PauseScreen/Resume" to="CanvasLayer/PauseScreen/Resume" method="OnClick"]
+[connection signal="mouse_entered" from="CanvasLayer/PauseScreen/Resume" to="CanvasLayer/PauseScreen/Resume" method="OnEnter"]
+[connection signal="mouse_exited" from="CanvasLayer/PauseScreen/Resume" to="CanvasLayer/PauseScreen/Resume" method="OnExit"]
+[connection signal="gui_input" from="CanvasLayer/PauseScreen/Quit" to="CanvasLayer/PauseScreen/Quit" method="OnClick"]
+[connection signal="mouse_entered" from="CanvasLayer/PauseScreen/Quit" to="CanvasLayer/PauseScreen/Quit" method="OnEnter"]
+[connection signal="mouse_exited" from="CanvasLayer/PauseScreen/Quit" to="CanvasLayer/PauseScreen/Quit" method="OnExit"]

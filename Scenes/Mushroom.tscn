@@ -1,6 +1,6 @@
 [gd_scene load_steps=10 format=3 uid="uid://b2wsikbiydijw"]
 
-[ext_resource type="Script" path="res://Scripts/Mushroom.cs" id="1_e5fnt"]
+[ext_resource type="Script" path="res://Scripts/Mushroom/Mushroom.cs" id="1_hqyjp"]
 [ext_resource type="Script" path="res://Scripts/Masks/MaskDrawNode.cs" id="2_y6s1w"]
 [ext_resource type="Texture2D" uid="uid://p6nbm2pvheso" path="res://Textures/Shroom1.png" id="3_2pmx4"]
 [ext_resource type="Texture2D" uid="uid://bnyb8yrn0uw5e" path="res://Textures/ShrromSelect.png" id="3_7omdv"]
@@ -26,7 +26,7 @@ outline_color = Color(0, 0, 0, 1)
 [node name="Mushroom" type="Node2D"]
 z_index = 15
 texture_filter = 1
-script = ExtResource("1_e5fnt")
+script = ExtResource("1_hqyjp")
 m_baseRadius = 100.0
 m_GenerationCurve = SubResource("Curve_ktwgr")
 
@@ -39,7 +39,7 @@ default_color = Color(0.72549, 0.427451, 0.0980392, 1)
 [node name="Sprite2D" type="Sprite2D" parent="."]
 self_modulate = Color(0.72, 0.42, 0.1, 1)
 z_index = 3
-scale = Vector2(1.875, 1.875)
+scale = Vector2(1e-05, 1e-05)
 texture = ExtResource("3_2pmx4")
 
 [node name="CPUParticles2D" type="CPUParticles2D" parent="Sprite2D"]
@@ -77,13 +77,12 @@ texture = ExtResource("3_7omdv")
 script = ExtResource("2_y6s1w")
 
 [node name="PowerLabel" type="Label" parent="."]
-self_modulate = Color(1, 1, 1, -5922.67)
 z_index = 10
 offset_left = -30.0
 offset_top = 5.0
 offset_right = 30.0
 offset_bottom = 35.0
-text = "10000"
+text = "0"
 label_settings = SubResource("LabelSettings_0q8ki")
 horizontal_alignment = 1
 

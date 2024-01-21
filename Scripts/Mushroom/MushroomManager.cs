@@ -5,10 +5,13 @@ using System.Security.Cryptography.X509Certificates;
 
 public partial class MushroomManager : Node2D
 {
+    [Export] public CanvasItem PauseScreen;
+    [Export] public CanvasItem ResumeButton;
+    [Export] public CanvasItem VictoryPanel;
+    [Export] public CanvasItem GameOverPanel;
+
     public static MushroomManager manager;
     public const float c_TooCloseToSprout = 20.0f;
-    
-    [Export] public Texture2D m_maskField;
 
     private Mushroom m_currentMushroom;
     public float cooldown = 0.2f;
@@ -16,6 +19,8 @@ public partial class MushroomManager : Node2D
     public List<Mushroom> m_RootMushrooms = new List<Mushroom>();
     public List<Mushroom> m_AllMushrooms = new List<Mushroom>();
     public List<Node2D> m_ToRemove = new List<Node2D>();
+
+    private Node2D m_Level;
 
     //----------------------------------------------------------
     //
@@ -28,17 +33,27 @@ public partial class MushroomManager : Node2D
     //----------------------------------------------------------
     //
     //----------------------------------------------------------
+    public override void _Ready()
+    {
+        PackedScene levelToLoad = ResourceLoader.Load<PackedScene>("res://Scenes/LevelA.tscn");
+        m_Level = levelToLoad.Instantiate<Node2D>();
+        AddChild(m_Level);
+    }
+
+    //----------------------------------------------------------
+    //
+    //----------------------------------------------------------
     public override void _Process(double delta)
     {
         base._Process(delta);
         if (cooldown > 0.0f)
         {
-            cooldown -= (float)delta;
+            cooldown -= (float)TimeManager.GetDeltaTime();
         }
         
         foreach(Node2D dead in m_ToRemove)
         {
-            RemoveChild(dead);
+            m_Level.RemoveChild(dead);
         }
         m_ToRemove.Clear();
     }
@@ -100,7 +115,69 @@ public partial class MushroomManager : Node2D
         if (mush.IsRoot())
         {
             m_RootMushrooms.Remove(mush);
+            CheckVictoryCondition();
         }
+    }
+
+    //----------------------------------------------------------
+    //
+    //----------------------------------------------------------
+    public void CheckVictoryCondition()
+    {
+        bool defeat = true;
+        bool victory = true;
+        foreach(Mushroom shroom in m_RootMushrooms)
+        {
+            if (shroom.GetCurrentKind() == MushroomKind.GOOD)
+            {
+                defeat = false;
+            }
+            else if (shroom.GetCurrentKind() == MushroomKind.EVIL1)
+            {
+                victory = false;
+            }
+        }
+
+        if (victory)
+        {
+            TimeManager.GetManager().Pause();
+            PauseScreen.Visible = true;
+            VictoryPanel.Visible = true;
+        }
+        else if (defeat)
+        {
+            TimeManager.GetManager().Pause();
+            PauseScreen.Visible = true;
+            GameOverPanel.Visible = true;
+        }
+    }
+
+    //----------------------------------------------------------
+    //
+    //----------------------------------------------------------
+    public void Pause()
+    {
+        TimeManager.GetManager().Pause();
+        PauseScreen.Visible = true;
+        ResumeButton.Visible = true;
+    }
+
+    //----------------------------------------------------------
+    //
+    //----------------------------------------------------------
+    public void EndPause()
+    {
+        ResumeButton.Visible = false;
+        PauseScreen.Visible = false;
+        TimeManager.GetManager().Unpause();
+    }
+
+    //----------------------------------------------------------
+    //
+    //----------------------------------------------------------
+    public void Quit()
+    {
+        GameManager.manager.GoToMenu();
     }
 
     //----------------------------------------------------------
@@ -210,15 +287,10 @@ public partial class MushroomManager : Node2D
                         m_currentMushroom.TransferToOther(MushroomFound);
                         cooldown = 0.2f;
                     }
-                    else
-                    {
-                        SetCurrentMushroom(null);
-                    }
                 }
                 else
                 {
                     Vector2 pos = GetViewport().GetMousePosition();
-                    Color maskColor = m_maskField.GetImage().GetPixel((int)pos.X, (int)pos.Y);
                     m_currentMushroom.SpawnAnOffspring(pos);
                     
                     SetCurrentMushroom(null);

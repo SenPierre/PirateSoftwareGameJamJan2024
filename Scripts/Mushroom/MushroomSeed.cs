@@ -33,7 +33,7 @@ public partial class MushroomSeed : Node2D
 
         if (m_BACKDASH == false && m_parent.ConnectedToRoot())
         {
-            m_currentLerp += m_lerpSpeed * (float)delta;
+            m_currentLerp += m_lerpSpeed * (float)TimeManager.GetDeltaTime();
             if (m_currentLerp >= 1.0f)
             {
                 // Move ending
@@ -44,9 +44,10 @@ public partial class MushroomSeed : Node2D
                 newShroom.Position = m_targetPos;
                 newShroom.m_baseRadius = m_CarriedRadius;
                 newShroom.m_BaseKind = m_parent.GetCurrentKind();
+                newShroom.PresetParent(m_parent);
                 m_parent.AddSibling(newShroom);
-                m_parent.SeedEndDeployment(true);
                 newShroom.SetParent(m_parent);
+                m_parent.SeedEndDeployment(true);
                 newShroom.UpdateRadius(m_CarriedRadius, false);
                 newShroom.SetCanGeneratePower(false);
                 QueueFree();
@@ -55,7 +56,7 @@ public partial class MushroomSeed : Node2D
         else
         {
             m_BACKDASH = true;
-            m_currentLerp -= m_lerpSpeed * (float)delta;
+            m_currentLerp -= m_lerpSpeed * (float)TimeManager.GetDeltaTime();
             if (m_currentLerp <= 0.0f)
             {
                 m_parent.SeedEndDeployment(false);

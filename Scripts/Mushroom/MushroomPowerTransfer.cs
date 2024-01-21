@@ -16,7 +16,7 @@ public partial class MushroomPowerTransfer : Node2D
     {
         base._Process(delta);
 
-        float moveDuringThatFrame = (float)delta * m_speed;
+        float moveDuringThatFrame = (float)TimeManager.GetDeltaTime() * m_speed;
         Vector2 remainingMoveUntilNextNode = m_Path[0].Position - Position;
         if (remainingMoveUntilNextNode.LengthSquared() > moveDuringThatFrame * moveDuringThatFrame)
         {
