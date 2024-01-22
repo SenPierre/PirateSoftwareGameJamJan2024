@@ -291,6 +291,15 @@ public partial class MushroomManager : Node2D
                 else
                 {
                     Vector2 pos = GetViewport().GetMousePosition();
+                    Vector2 move = pos - m_currentMushroom.GlobalPosition;
+                    float currentPower = m_currentMushroom.GetPower();
+                    
+                    if (currentPower < move.LengthSquared())
+                    {
+                        move = move.Normalized() * m_currentMushroom.GetRadius() * 0.99f;
+                        pos = m_currentMushroom.GlobalPosition + move;
+                    }
+
                     m_currentMushroom.SpawnAnOffspring(pos);
                     
                     SetCurrentMushroom(null);

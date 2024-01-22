@@ -1,10 +1,11 @@
-[gd_scene load_steps=30 format=3 uid="uid://6wo1c0hxd8vt"]
+[gd_scene load_steps=31 format=3 uid="uid://6wo1c0hxd8vt"]
 
 [ext_resource type="Script" path="res://Scripts/Mushroom/MushroomManager.cs" id="1_hljsn"]
 [ext_resource type="Script" path="res://Scripts/TimeManager.cs" id="2_l8wej"]
 [ext_resource type="Script" path="res://Scripts/RandomManager.cs" id="3_pafbj"]
 [ext_resource type="Script" path="res://Scripts/Masks/MaskCalculator.cs" id="4_3okrv"]
 [ext_resource type="Shader" path="res://Shaders/GrayScaleMask.gdshader" id="5_5tsgb"]
+[ext_resource type="Script" path="res://Scripts/MushroomHelper.cs" id="6_b52wr"]
 [ext_resource type="Script" path="res://Scripts/Mushroom/MushroomAI.cs" id="6_bd8l0"]
 [ext_resource type="Texture2D" uid="uid://snvyebuekj7o" path="res://Textures/PauseButton.png" id="6_tw2aj"]
 [ext_resource type="Script" path="res://Scripts/MenuButton.cs" id="7_3cnas"]
@@ -249,6 +250,7 @@ shape = SubResource("RectangleShape2D_la6ye")
 
 [node name="ViewPortMask" type="SubViewport" parent="."]
 size = Vector2i(576, 324)
+render_target_update_mode = 3
 
 [node name="ColorRect" type="ColorRect" parent="ViewPortMask"]
 offset_right = 1152.0
@@ -266,7 +268,16 @@ offset_right = 576.0
 offset_bottom = 324.0
 mouse_filter = 2
 
+[node name="MushroomHelper" type="Node2D" parent="CanvasLayer"]
+z_index = 1
+script = ExtResource("6_b52wr")
+m_ValidColor = Color(0.141176, 0.517647, 0.137255, 0.572549)
+m_WarningColor = Color(0.733333, 0.32549, 0, 0.670588)
+m_InvalidColor = Color(0.733333, 0.0705882, 0.0509804, 0.823529)
+m_OriginColor = Color(0.443137, 0.443137, 0.443137, 0.698039)
+
 [node name="PauseButton" type="TextureRect" parent="CanvasLayer" node_paths=PackedStringArray("anim")]
+z_index = 2
 texture_filter = 1
 offset_right = 40.0
 offset_bottom = 40.0
