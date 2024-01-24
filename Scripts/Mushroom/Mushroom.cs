@@ -2,7 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-public enum MushroomKind 
+public enum MushroomKind
 {
     GOOD,
     EVIL1,
@@ -13,8 +13,8 @@ public enum MushroomKind
 [Tool]
 public partial class Mushroom : Node2D
 {
-    Color[] c_kindColor = 
-    {  
+    Color[] c_kindColor =
+    {
         new Color(1.0f, 0.0f, 0.0f),
         new Color(0.0f, 1.0f, 0.0f),
         new Color(1.0f, 1.0f, 0.0f),
@@ -25,8 +25,10 @@ public partial class Mushroom : Node2D
 
     [Export] public float m_baseRadius;
     [Export] public MushroomKind m_BaseKind;
+    [Export] public Texture2D m_ForcedSprite;
+    [Export] public Texture2D m_ForcedSelectSprite;
     [Export] public Curve m_GenerationCurve;
-    
+
     private MaskDrawNode m_Mask;
     private Sprite2D m_Sprite;
     private Sprite2D m_SelectedSprite;
@@ -60,9 +62,12 @@ public partial class Mushroom : Node2D
     private float m_SpawningLerp = 1.0f;
     private float m_TrueSpawningLerp = 1.0f;
 
-    private float m_transferReminding = 0.0f;
+    private float m_transferRemaining = 0.0f;
 
     private float m_LoosingAlledgance = c_AllegeanceTimer;
+
+    private float m_MassTransferAbsorbTimer = 0.0f;
+    private MushroomPowerTransfer m_lastSentTransfer = null;
 
     //----------------------------------------------------------
     //
@@ -85,6 +90,8 @@ public partial class Mushroom : Node2D
     {
         base._Ready();
 
+        PickASprite();
+
         SetSelected(false);
         UpdateKind(m_BaseKind);
         UpdateRadius(m_baseRadius, false);
@@ -96,8 +103,26 @@ public partial class Mushroom : Node2D
         m_isSpawning = true;
         m_SpawningLerp = 0.0f;
         m_TrueSpawningLerp = 0.0f;
-        
+
         m_Particles.Visible = m_generatePower;
+    }
+
+    //----------------------------------------------------------
+    //
+    //----------------------------------------------------------
+    private void PickASprite()
+    {
+        if (m_ForcedSprite != null && m_ForcedSelectSprite != null)
+        {
+            m_Sprite.Texture = m_ForcedSprite;
+            m_SelectedSprite.Texture = m_ForcedSelectSprite;
+        }
+        else
+        {
+            MushroomSpriteData data = MushroomSpriteDatabase.database.PickARandomSprite();
+            m_Sprite.Texture = data.m_Sprite;
+            m_SelectedSprite.Texture = data.m_SpriteSelect;
+        }
     }
 
     //----------------------------------------------------------
@@ -116,6 +141,11 @@ public partial class Mushroom : Node2D
         if (TimeManager.GetManager() != null)
         {
             trueDelta = TimeManager.GetDeltaTime();
+        }
+
+        if (m_MassTransferAbsorbTimer > 0.0f)
+        {
+            m_MassTransferAbsorbTimer -= trueDelta;
         }
 
         UpdateSpawning(trueDelta);
@@ -143,10 +173,11 @@ public partial class Mushroom : Node2D
             TryToReconnectToNearbyShroom(true);
             if (m_ParentConnectionBroken)
             {
-                m_LoosingAlledgance -= (float) delta;
+                m_LoosingAlledgance -= (float)delta;
                 if (m_LoosingAlledgance <= 0.0f)
                 {
                     UpdateKind(MushroomKind.NEUTRAL);
+                    SetParent(null);
                 }
             }
         }
@@ -163,7 +194,7 @@ public partial class Mushroom : Node2D
             m_TrueSpawningLerp += (float)delta;
             if (m_TrueSpawningLerp >= 1.0f)
             {
-                m_TrueSpawningLerp = 1.0f; 
+                m_TrueSpawningLerp = 1.0f;
                 m_isSpawning = false;
             }
             m_SpawningLerp = Mathf.Ease(m_TrueSpawningLerp, 0.25f);
@@ -179,31 +210,31 @@ public partial class Mushroom : Node2D
     {
         float powerToAdd = 0.0f;
 
-        foreach(Mushroom challenger in m_challengers)
+        foreach (Mushroom challenger in m_challengers)
         {
             powerToAdd -= (float)delta * 400.0f;
         }
 
-        if (m_transferReminding != 0.0f)
+        if (m_transferRemaining != 0.0f)
         {
-            float transferedThisFrame = Math.Min((float)delta * 200.0f, Math.Abs(m_transferReminding)) * Math.Sign(m_transferReminding); 
+            float transferedThisFrame = Math.Min((float)delta * 200.0f, Math.Abs(m_transferRemaining)) * Math.Sign(m_transferRemaining);
             powerToAdd += transferedThisFrame;
-            m_transferReminding -= transferedThisFrame;
+            m_transferRemaining -= transferedThisFrame;
         }
 
-            float currentPower = m_radius * m_radius;
-        if (m_generatePower && m_currentKind != MushroomKind.NEUTRAL && currentPower < 10000.0f )
+        float currentPower = m_radius * m_radius;
+        if (m_generatePower && m_currentKind != MushroomKind.NEUTRAL && currentPower < 10000.0f)
         {
             float generationRate = m_GenerationCurve.Sample(currentPower / 10000.0f);
-            powerToAdd += generationRate * (float) delta;
+            powerToAdd += generationRate * (float)delta;
         }
 
-/*
-        if (ConnectedToRoot() == false && HasChildConnected() == false)
-        {
-            powerToRemove += (float)delta * 100.0f;
-        }
-*/
+        /*
+                if (ConnectedToRoot() == false && HasChildConnected() == false)
+                {
+                    powerToRemove += (float)delta * 100.0f;
+                }
+        */
 
         if (m_deployedSeed != null)
         {
@@ -231,8 +262,10 @@ public partial class Mushroom : Node2D
     //----------------------------------------------------------
     private void UpdatePowerLabel()
     {
-        Color modulate = new Color(1,1,1, m_Selected ? 1.0f : Mathf.Min(m_ShowPowerCooldown, 1.0f));
+        Color modulate = new Color(1, 1, 1, m_Selected ? 1.0f : Mathf.Min(m_ShowPowerCooldown, 1.0f));
         m_PowerLabel.SelfModulate = modulate;
+
+
         m_PowerLabel.Text = Mathf.Round(m_SpawningLerp * m_radius * m_radius).ToString();
     }
 
@@ -241,14 +274,14 @@ public partial class Mushroom : Node2D
     //----------------------------------------------------------
     private void UpdateColor()
     {
-        m_Sprite.SelfModulate = IsRoot() == false 
-            ? new Color(0.72f, 0.42f, 0.1f, 1.0f) 
+        m_Sprite.SelfModulate = IsRoot() == false
+            ? new Color(0.72f, 0.42f, 0.1f, 1.0f)
             : new Color(0.22f, 0.12f, 0.0f, 1.0f);
 
 
         if (m_Mask != null) // set of members are done before the _ready.so we need to test the mask validity
         {
-            Color offsetConnection = new Color(0,0,0,0);
+            Color offsetConnection = new Color(0, 0, 0, 0);
             if (m_ParentConnectionBroken)
             {
                 offsetConnection.B = (c_AllegeanceTimer - m_LoosingAlledgance) / c_AllegeanceTimer;
@@ -307,7 +340,7 @@ public partial class Mushroom : Node2D
     //----------------------------------------------------------
     public float GetPrevisionalPower()
     {
-        return m_radius * m_radius + m_transferReminding;
+        return m_radius * m_radius + m_transferRemaining;
     }
 
     //----------------------------------------------------------
@@ -317,17 +350,17 @@ public partial class Mushroom : Node2D
     {
         m_ParentConnectionBroken = true;
         m_Line2D.Visible = false;
-        
+
         if (TryToReconnectToNearbyShroom(true) == false)
         {
             m_LoosingAlledgance = c_AllegeanceTimer;
             if (MushroomManager.manager.GetCurrentMushroom() == this)
             {
-                MushroomManager.manager.SetCurrentMushroom(null); 
+                MushroomManager.manager.SetCurrentMushroom(null);
             }
         }
 
-        for( int i = m_Children.Count - 1; i >= 0; i--)
+        for (int i = m_Children.Count - 1; i >= 0; i--)
         {
             Mushroom child = m_Children[i];
             child.BreakParentConnection();
@@ -403,12 +436,16 @@ public partial class Mushroom : Node2D
         }
 
         m_Parent = shroom;
-        m_Line2D.Visible = true;
-        m_Line2D.SetPointPosition(0, Vector2.Zero);
-        m_Line2D.SetPointPosition(1, shroom.Position - Position);
-        m_ParentConnectionBroken = false;
-        m_Parent.m_Children.Add(this);
-        UpdateKind(m_Parent.m_currentKind);
+
+        if (m_Parent != null)
+        {
+            m_Line2D.Visible = true;
+            m_Line2D.SetPointPosition(0, Vector2.Zero);
+            m_Line2D.SetPointPosition(1, shroom.Position - Position);
+            m_ParentConnectionBroken = false;
+            m_Parent.m_Children.Add(this);
+            UpdateKind(m_Parent.m_currentKind);
+        }
     }
 
     //----------------------------------------------------------
@@ -434,7 +471,7 @@ public partial class Mushroom : Node2D
     //----------------------------------------------------------
     bool HasChildConnected()
     {
-        foreach(Mushroom child in m_Children)
+        foreach (Mushroom child in m_Children)
         {
             if (child.m_ParentConnectionBroken == false)
             {
@@ -450,7 +487,7 @@ public partial class Mushroom : Node2D
     //----------------------------------------------------------
     private void CheckChildrenConnection()
     {
-        for( int i = m_Children.Count - 1; i >= 0; i--)
+        for (int i = m_Children.Count - 1; i >= 0; i--)
         {
             Mushroom child = m_Children[i];
             child.CheckParentConnection();
@@ -480,7 +517,7 @@ public partial class Mushroom : Node2D
     //----------------------------------------------------------
     public void CheckEndFight()
     {
-        for(int i = m_challengers.Count - 1; i >= 0; i--)
+        for (int i = m_challengers.Count - 1; i >= 0; i--)
         {
             Mushroom challenger = m_challengers[i];
             Vector2 Dist = challenger.Position - Position;
@@ -499,7 +536,7 @@ public partial class Mushroom : Node2D
     //----------------------------------------------------------
     public void ClearFights()
     {
-        for(int i = m_challengers.Count - 1; i >= 0; i--)
+        for (int i = m_challengers.Count - 1; i >= 0; i--)
         {
             Mushroom challenger = m_challengers[i];
             m_challengers.Remove(challenger);
@@ -518,6 +555,33 @@ public partial class Mushroom : Node2D
     //----------------------------------------------------------
     //
     //----------------------------------------------------------
+    public bool IsIndirectParentOf(Mushroom thisisridiculous)
+    {
+        if (thisisridiculous == this)
+        {
+            return true;
+        }
+        else if (thisisridiculous.m_Parent == null)
+        {
+            return false;
+        }
+        else
+        {
+            return IsIndirectParentOf(thisisridiculous.m_Parent);
+        }
+    }
+
+    //----------------------------------------------------------
+    //
+    //----------------------------------------------------------
+    public bool IsParentOf(Mushroom mewmew)
+    {
+        return mewmew.m_Parent == this;
+    }
+
+    //----------------------------------------------------------
+    //
+    //----------------------------------------------------------
     public bool WillLooseConnexionIfCreateOffspring()
     {
         List<Mushroom> toCheck = new List<Mushroom>(m_Children);
@@ -529,16 +593,48 @@ public partial class Mushroom : Node2D
         float foreCastPower = Math.Min(GetPower(), GetPrevisionalPower());
 
         float newRadiusWouldBe = Mathf.Sqrt(foreCastPower / 2.0f);
-        foreach(Mushroom shroom in toCheck)
+        foreach (Mushroom shroom in toCheck)
         {
+            float otherforeCastPower = Math.Min(shroom.GetPower(), shroom.GetPrevisionalPower());
+            float otherforeCastRadius = (float)Math.Sqrt(otherforeCastPower);
             float DistSquared = (Position - shroom.Position).LengthSquared();
-            float connexionCapacity = newRadiusWouldBe + shroom.m_radius;
+            float connexionCapacity = newRadiusWouldBe + otherforeCastRadius;
             if (DistSquared > (connexionCapacity * connexionCapacity))
             {
                 return true;
             }
         }
         return false;
+    }
+
+    //----------------------------------------------------------
+    //
+    //----------------------------------------------------------
+    public void GetLooseConnexionIfCreateOffspring(ref List<Mushroom> LostConnection)
+    {
+        List<Mushroom> toCheck = new List<Mushroom>(m_Children);
+        if (m_Parent != null)
+        {
+            toCheck.Add(m_Parent);
+        }
+
+        float foreCastPower = Math.Min(GetPower(), GetPrevisionalPower());
+
+        float newRadiusWouldBe = Mathf.Sqrt(foreCastPower / 2.0f);
+        foreach (Mushroom shroom in toCheck)
+        {
+            if (shroom.m_ParentConnectionBroken == false)
+            {
+                float otherforeCastPower = Math.Min(shroom.GetPower(), shroom.GetPrevisionalPower());
+                float otherforeCastRadius = (float)Math.Sqrt(otherforeCastPower);
+                float DistSquared = (Position - shroom.Position).LengthSquared();
+                float connexionCapacity = newRadiusWouldBe + otherforeCastRadius;
+                if (DistSquared > (connexionCapacity * connexionCapacity))
+                {
+                    LostConnection.Add(shroom);
+                }
+            }
+        }
     }
 
     //----------------------------------------------------------
@@ -555,10 +651,12 @@ public partial class Mushroom : Node2D
         float foreCastPower = Math.Min(GetPower(), GetPrevisionalPower());
 
         float newRadiusWouldBe = Mathf.Sqrt(foreCastPower - 100.0f);
-        foreach(Mushroom shroom in toCheck)
+        foreach (Mushroom shroom in toCheck)
         {
+            float otherforeCastPower = Math.Min(shroom.GetPower(), shroom.GetPrevisionalPower());
+            float otherforeCastRadius = (float)Math.Sqrt(otherforeCastPower);
             float DistSquared = (Position - shroom.Position).LengthSquared();
-            float connexionCapacity = newRadiusWouldBe + shroom.m_radius;
+            float connexionCapacity = newRadiusWouldBe + otherforeCastRadius;
             if (DistSquared > (connexionCapacity * connexionCapacity))
             {
                 return true;
@@ -571,20 +669,74 @@ public partial class Mushroom : Node2D
     //----------------------------------------------------------
     //
     //----------------------------------------------------------
-    public bool TransferToOther(Mushroom otherMushroom)
+    public float ComputeMaxTransferPossible()
+    {
+        float foreCastPower = Math.Min(GetPower(), GetPrevisionalPower());
+        float foreCastRadius = (float)Math.Sqrt(foreCastPower);
+
+        float maxTransfer = foreCastPower - 200.0f;
+
+        List<Mushroom> toCheck = new List<Mushroom>(m_Children);
+        if (m_Parent != null)
+        {
+            toCheck.Add(m_Parent);
+        }
+        
+        foreach (Mushroom shroom in toCheck)
+        {
+            float otherforeCastPower = Math.Min(shroom.GetPower(), shroom.GetPrevisionalPower());
+            float otherforeCastRadius = (float)Math.Sqrt(otherforeCastPower);
+            float Dist = (Position - shroom.Position).Length();
+            float currentConnexionCapacity = foreCastRadius + otherforeCastRadius;
+            if (Dist > currentConnexionCapacity)
+            {
+                return 0.0f;
+            }
+            else
+            {
+                float targetRadius = Dist - otherforeCastRadius;
+                float diff = foreCastPower - targetRadius * targetRadius;
+                maxTransfer = Mathf.Min(maxTransfer, diff);
+            }
+        }
+
+        return maxTransfer;
+    }
+
+    //----------------------------------------------------------
+    //
+    //----------------------------------------------------------
+    public bool TransferToOther(Mushroom otherMushroom, bool massTransfer = false)
     {
         List<Mushroom> path = new List<Mushroom>();
         if (otherMushroom.FindMushroomPath(this, ref path))
         {
             PackedScene shroomPrefab = ResourceLoader.Load<PackedScene>("res://Scenes/MushroomPowerTransfer.tscn");
-        
+
             MushroomPowerTransfer transfer = shroomPrefab.Instantiate<MushroomPowerTransfer>();
             transfer.m_Path = path;
             transfer.Position = Position;
-            transfer.m_PowerTransfered = 100.0f;
+            if (massTransfer)
+            {
+
+                transfer.m_PowerTransfered = ComputeMaxTransferPossible();
+                Transfer(-transfer.m_PowerTransfered);
+
+                if (m_MassTransferAbsorbTimer > 0.0f)
+                {
+                    transfer.m_PowerTransfered += m_lastSentTransfer.m_PowerTransfered;
+                    m_lastSentTransfer.QueueFree();
+                }
+            }
+            else
+            {
+                transfer.m_PowerTransfered = 100.0f;
+                Transfer(-100.0f);
+            }
             transfer.m_kind = m_currentKind;
             AddSibling(transfer);
-            Transfer(-100.0f);
+            m_MassTransferAbsorbTimer = 0.5f;
+            m_lastSentTransfer = transfer;
             return true;
         }
         return false;
@@ -595,7 +747,7 @@ public partial class Mushroom : Node2D
     //----------------------------------------------------------
     public void Transfer(float power)
     {
-        m_transferReminding += power;
+        m_transferRemaining += power;
     }
 
     //----------------------------------------------------------
@@ -622,7 +774,7 @@ public partial class Mushroom : Node2D
     public void UpdateRadius(float newRadius, bool Check)
     {
         m_radius = newRadius;
-        
+
         if (m_Mask != null) // set of members are done before the _ready.so we need to test the mask validity
         {
             m_Mask.UpdateRadius(m_radius * m_SpawningLerp);
@@ -643,7 +795,7 @@ public partial class Mushroom : Node2D
         }
     }
 
-    
+
 
     //----------------------------------------------------------
     //
@@ -664,7 +816,7 @@ public partial class Mushroom : Node2D
             return true;
         }
 
-        foreach(Mushroom child in m_Children)
+        foreach (Mushroom child in m_Children)
         {
             if (previous != child)
             {
@@ -708,8 +860,8 @@ public partial class Mushroom : Node2D
 
         if (buttonLeftPressed != 0 && MushroomManager.manager.cooldown <= 0.0f)
         {
-            if (MushroomManager.manager.HasCurrentMushroom() == false 
-            && m_ParentConnectionBroken == false 
+            if (MushroomManager.manager.HasCurrentMushroom() == false
+            && m_ParentConnectionBroken == false
             && m_currentKind == MushroomKind.GOOD
             )
             {
@@ -739,7 +891,7 @@ public partial class Mushroom : Node2D
             if (m_radius * m_radius > (pos - GlobalPosition).LengthSquared())
             {
                 PackedScene shroomPrefab = ResourceLoader.Load<PackedScene>("res://Scenes/MushroomSeed.tscn");
-                
+
                 MushroomSeed newSeed = shroomPrefab.Instantiate<MushroomSeed>();
                 newSeed.GlobalPosition = Position;
                 newSeed.m_targetPos = pos;

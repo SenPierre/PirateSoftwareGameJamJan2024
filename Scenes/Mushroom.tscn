@@ -3,8 +3,8 @@
 [ext_resource type="Script" path="res://Scripts/Mushroom/Mushroom.cs" id="1_hqyjp"]
 [ext_resource type="Script" path="res://Scripts/Masks/MaskDrawNode.cs" id="2_y6s1w"]
 [ext_resource type="Texture2D" uid="uid://p6nbm2pvheso" path="res://Textures/Shroom1.png" id="3_2pmx4"]
-[ext_resource type="Texture2D" uid="uid://bnyb8yrn0uw5e" path="res://Textures/ShrromSelect.png" id="3_7omdv"]
 [ext_resource type="Texture2D" uid="uid://cvh44825o5wed" path="res://Textures/PowerFx.png" id="3_a8h4e"]
+[ext_resource type="Texture2D" uid="uid://dm8u7b6ruhsxj" path="res://Textures/ShroomSelect1.png" id="4_66tlr"]
 
 [sub_resource type="Curve" id="Curve_ktwgr"]
 max_value = 100.0
@@ -37,7 +37,7 @@ width = 5.0
 default_color = Color(0.72549, 0.427451, 0.0980392, 1)
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-self_modulate = Color(0.72, 0.42, 0.1, 1)
+self_modulate = Color(0.22, 0.12, 0, 1)
 z_index = 3
 scale = Vector2(1e-05, 1e-05)
 texture = ExtResource("3_2pmx4")
@@ -71,7 +71,7 @@ shape = SubResource("RectangleShape2D_sa2t7")
 
 [node name="Select" type="Sprite2D" parent="Sprite2D"]
 visible = false
-texture = ExtResource("3_7omdv")
+texture = ExtResource("4_66tlr")
 
 [node name="MaskDrawer" type="Node2D" parent="."]
 script = ExtResource("2_y6s1w")

@@ -1,6 +1,44 @@
-[gd_scene load_steps=2 format=3 uid="uid://ce25hrl2la705"]
+[gd_scene load_steps=16 format=3 uid="uid://ce25hrl2la705"]
 
 [ext_resource type="Script" path="res://Scripts/GameManager.cs" id="1_hn5gt"]
+[ext_resource type="Script" path="res://Scripts/Mushroom/MushroomSpriteDatabase.cs" id="2_kkhen"]
+[ext_resource type="Texture2D" uid="uid://p6nbm2pvheso" path="res://Textures/Shroom1.png" id="3_qx8du"]
+[ext_resource type="Texture2D" uid="uid://dm8u7b6ruhsxj" path="res://Textures/ShroomSelect1.png" id="4_5jmqk"]
+[ext_resource type="Script" path="res://Scripts/Mushroom/MushroomSpriteData.cs" id="5_ih6do"]
+[ext_resource type="Texture2D" uid="uid://dujo5u01g2404" path="res://Textures/Shroom3.png" id="6_got7y"]
+[ext_resource type="Texture2D" uid="uid://b4y4fwqw3vb6c" path="res://Textures/ShroomSelect3.png" id="7_0sex2"]
+[ext_resource type="Texture2D" uid="uid://cvi4arygs0esm" path="res://Textures/Shroom4.png" id="8_potu1"]
+[ext_resource type="Texture2D" uid="uid://suv68yy2i4ht" path="res://Textures/ShroomSelect4.png" id="9_ik06l"]
+[ext_resource type="Texture2D" uid="uid://cr2osm2l1uxu4" path="res://Textures/Shroom5.png" id="10_8cdgv"]
+[ext_resource type="Texture2D" uid="uid://0h5h3g0led" path="res://Textures/ShroomSelect5.png" id="11_sdf2c"]
+
+[sub_resource type="Resource" id="Resource_i8s5v"]
+script = ExtResource("5_ih6do")
+m_Sprite = ExtResource("3_qx8du")
+m_SpriteSelect = ExtResource("4_5jmqk")
+weight = 1.0
+
+[sub_resource type="Resource" id="Resource_ybrv2"]
+script = ExtResource("5_ih6do")
+m_Sprite = ExtResource("6_got7y")
+m_SpriteSelect = ExtResource("7_0sex2")
+weight = 0.7
+
+[sub_resource type="Resource" id="Resource_o6st0"]
+script = ExtResource("5_ih6do")
+m_Sprite = ExtResource("8_potu1")
+m_SpriteSelect = ExtResource("9_ik06l")
+weight = 1.0
+
+[sub_resource type="Resource" id="Resource_3tt70"]
+script = ExtResource("5_ih6do")
+m_Sprite = ExtResource("10_8cdgv")
+m_SpriteSelect = ExtResource("11_sdf2c")
+weight = 1.0
 
 [node name="GameManager" type="Node2D"]
 script = ExtResource("1_hn5gt")
+
+[node name="SpriteDatabase" type="Node2D" parent="."]
+script = ExtResource("2_kkhen")
+m_spriteData = Array[Object]([SubResource("Resource_i8s5v"), SubResource("Resource_ybrv2"), SubResource("Resource_o6st0"), SubResource("Resource_3tt70")])

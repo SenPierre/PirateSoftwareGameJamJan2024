@@ -5,12 +5,22 @@ using System.Collections.Generic;
 public partial class MushroomPowerTransfer : Node2D
 {
     [Export] public float m_speed;
+    [Export] public Sprite2D m_Sprite;
 
     public MushroomKind m_kind;
     public List<Mushroom> m_Path;
     public float m_PowerTransfered = 100.0f;
 
     private Mushroom m_previousMushroom = null;
+
+    public override void _Ready()
+    {
+        base._Ready();
+        if (m_PowerTransfered > 100.0)
+        {
+            m_Sprite.Scale = Vector2.One * 3.0f;
+        }
+    }
 
     public override void _Process(double delta)
     {

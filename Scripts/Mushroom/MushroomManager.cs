@@ -122,6 +122,27 @@ public partial class MushroomManager : Node2D
     //----------------------------------------------------------
     //
     //----------------------------------------------------------
+    public bool CanReconnectIfCreateOffspring(Mushroom mush)
+    {
+        float newRadius = Mathf.Sqrt(mush.GetPower() / 2.0f);
+        foreach (Mushroom shroom in m_AllMushrooms)
+        {
+            if (shroom.IsSameKind(mush) && mush.IsIndirectParentOf(shroom) == false)
+            {
+                float dist = mush.Position.DistanceTo(shroom.Position);
+                if (dist < newRadius + shroom.GetRadius())
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    //----------------------------------------------------------
+    //
+    //----------------------------------------------------------
     public void CheckVictoryCondition()
     {
         bool defeat = true;
@@ -259,51 +280,58 @@ public partial class MushroomManager : Node2D
     //----------------------------------------------------------
     public void InputEvent(Node viewport, InputEvent generatedEvent, int shapeIdx)
     {
-        InputEventMouse mouseEvent = (InputEventMouse)generatedEvent;
-        int buttonLeftPressed = ((int)mouseEvent.ButtonMask) & ((int)MouseButton.Left);
-        int buttonRightPressed = ((int)mouseEvent.ButtonMask) & ((int)MouseButton.Right);
-        if (m_currentMushroom != null && cooldown <= 0.0f)
+        InputEventMouseButton mouseEvent = generatedEvent as InputEventMouseButton;
+        if (mouseEvent != null)
         {
-            if (buttonRightPressed != 0)
+            int buttonLeftPressed = ((int)mouseEvent.ButtonMask) & ((int)MouseButton.Left);
+            int buttonRightPressed = ((int)mouseEvent.ButtonMask) & ((int)MouseButton.Right);
+            if (m_currentMushroom != null && cooldown <= 0.0f)
             {
-                SetCurrentMushroom(null);
-                cooldown = 0.2f;
-            }
-            else if (buttonLeftPressed != 0)
-            {
-                if (m_currentMushroom.GetPower() < 200 || m_currentMushroom.GetPrevisionalPower() < 200)
+                if (buttonRightPressed != 0)
                 {
                     SetCurrentMushroom(null);
                     cooldown = 0.2f;
-                    return;
                 }
-
-                Mushroom MushroomFound = CheckMushroomCloseness(GetViewport().GetMousePosition());
-
-                if (MushroomFound != null)
+                else if (buttonLeftPressed != 0)
                 {
-                    if (m_currentMushroom.WillLooseConnexionIfTransfer() == false)
+                    if (m_currentMushroom.GetPower() < 200.0 || m_currentMushroom.GetPrevisionalPower() < 200.0f)
                     {
-                        m_currentMushroom.TransferToOther(MushroomFound);
+                        SetCurrentMushroom(null);
                         cooldown = 0.2f;
-                    }
-                }
-                else
-                {
-                    Vector2 pos = GetViewport().GetMousePosition();
-                    Vector2 move = pos - m_currentMushroom.GlobalPosition;
-                    float currentPower = m_currentMushroom.GetPower();
-                    
-                    if (currentPower < move.LengthSquared())
-                    {
-                        move = move.Normalized() * m_currentMushroom.GetRadius() * 0.99f;
-                        pos = m_currentMushroom.GlobalPosition + move;
+                        return;
                     }
 
-                    m_currentMushroom.SpawnAnOffspring(pos);
-                    
-                    SetCurrentMushroom(null);
-                    cooldown = 0.2f;
+                    Mushroom MushroomFound = CheckMushroomCloseness(GetViewport().GetMousePosition());
+
+                    if (MushroomFound != null && MushroomFound.GetCurrentKind() == MushroomKind.GOOD)
+                    {
+                        if (m_currentMushroom.WillLooseConnexionIfTransfer() == false)
+                        {
+                            m_currentMushroom.TransferToOther(MushroomFound, mouseEvent.DoubleClick);
+                            cooldown = 0.05f;
+                        }
+                    }
+                    else
+                    {
+                        Vector2 pos = GetViewport().GetMousePosition();
+                        Vector2 move = pos - m_currentMushroom.GlobalPosition;
+                        float currentPower = m_currentMushroom.GetPower();
+                        
+                        if (currentPower < move.LengthSquared())
+                        {
+                            move = move.Normalized() * m_currentMushroom.GetRadius() * 0.99f;
+                            pos = m_currentMushroom.GlobalPosition + move;
+                        }
+
+                        MushroomFound = CheckMushroomCloseness(pos);
+
+                        if (MushroomFound == null)
+                        {
+                            m_currentMushroom.SpawnAnOffspring(pos);
+                            SetCurrentMushroom(null);
+                            cooldown = 0.2f;
+                        }
+                    }
                 }
             }
         }

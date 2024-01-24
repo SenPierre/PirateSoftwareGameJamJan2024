@@ -12,6 +12,7 @@ public partial class MushroomHelper : Node2D
     private bool m_showHelper = false;
     private bool m_valid = false;
     private bool m_warning = false;
+    private bool m_WillBreakparent = false;
 
     private bool m_showTargetSprout = false;
     private bool m_showTargetTransfer = false;
@@ -21,7 +22,11 @@ public partial class MushroomHelper : Node2D
     private float m_sproutRadius;
 
     private List<Vector2> m_TransferPath = new List<Vector2>();
+    private List<Mushroom> m_lostConnexion = new List<Mushroom>();
 
+    //----------------------------------------------------------
+    //
+    //----------------------------------------------------------
     public override void _Process(double delta)
     {
         base._Process(delta);
@@ -30,6 +35,7 @@ public partial class MushroomHelper : Node2D
         m_showHelper = false;
         m_valid = true;
         m_warning = false;
+        m_WillBreakparent = false;
         m_showTargetSprout = false;
         m_showTargetTransfer = false;
 
@@ -45,13 +51,22 @@ public partial class MushroomHelper : Node2D
             Mushroom mushroomFound = MushroomManager.manager.CheckMushroomCloseness(mousePos);
             if (mushroomFound == null || mushroomFound.GetCurrentKind() != currentMushroom.GetCurrentKind())
             {
-                if (mushroomFound != null)
-                {
-                    m_valid = false;
-                }
-
                 m_showHelper = true;
                 m_showTargetSprout = true;
+
+                m_lostConnexion.Clear();
+                currentMushroom.GetLooseConnexionIfCreateOffspring(ref m_lostConnexion);
+
+                foreach(Mushroom lostMushroom in m_lostConnexion)
+                {
+                    m_warning = true;
+                    if (lostMushroom.IsParentOf(currentMushroom))
+                    {
+                        m_WillBreakparent = true;
+                        break;
+                    }
+                }
+
                 if (currentMushroom.WillLooseConnexionIfCreateOffspring())
                 {
                     m_warning = true;
@@ -65,6 +80,12 @@ public partial class MushroomHelper : Node2D
                     move = move.Normalized() * currentMushroom.GetRadius();
                     mousePos = currentMushroom.GlobalPosition + move;
                 }
+                
+                mushroomFound = MushroomManager.manager.CheckMushroomCloseness(mousePos);
+                if (mushroomFound != null)
+                {
+                    m_valid = false;
+                }
 
                 m_sproutSource =  currentMushroom.GlobalPosition;
                 m_sproutTarget = mousePos;
@@ -72,6 +93,11 @@ public partial class MushroomHelper : Node2D
             } 
             else if (mushroomFound != currentMushroom)
             {
+                if (currentMushroom.WillLooseConnexionIfTransfer())
+                {
+                    m_valid = false;
+                }
+
                 List<Mushroom> path = new List<Mushroom>();
                 if (mushroomFound.FindMushroomPath(currentMushroom, ref path))
                 {
@@ -88,22 +114,52 @@ public partial class MushroomHelper : Node2D
         QueueRedraw();
     }
 
+    //----------------------------------------------------------
+    //
+    //----------------------------------------------------------
     public override void _Draw()
     {
         base._Draw();
 
         if (m_showHelper)
         {
-            Color color = m_valid ? (m_warning ? m_WarningColor : m_ValidColor) : m_InvalidColor;
+            Color color = m_valid && m_WillBreakparent == false ? (m_warning ? m_WarningColor : m_ValidColor) : m_InvalidColor;
             if (m_showTargetSprout)
             {
                 DrawLine(m_sproutSource, m_sproutTarget, color, 2.0f);
 
-                for (float f = 0.0f; f < 360.0f; f += 30.0f)
+                if (m_valid)
                 {
-                    DrawCircleArc(m_sproutSource, m_sproutRadius, f, f + 10.0f, 10, m_OriginColor, 1);
-                    DrawCircleArc(m_sproutTarget, m_sproutRadius, f, f + 10.0f, 10, color, 2);
+                    for (float f = 0.0f; f < 360.0f; f += 30.0f)
+                    {
+                        DrawCircleArc(m_sproutSource, m_sproutRadius, f, f + 10.0f, 10, m_OriginColor, 1);
+                        DrawCircleArc(m_sproutTarget, m_sproutRadius, f, f + 10.0f, 10, color, 2);
+                    }
                 }
+                else
+                {
+                    DrawLine(   m_sproutTarget + (Vector2.Up + Vector2.Left) * m_sproutRadius / 2.0f, 
+                                m_sproutTarget + (Vector2.Down + Vector2.Right) * m_sproutRadius / 2.0f,
+                                color, 3.0f);
+                                
+                    DrawLine(   m_sproutTarget + (Vector2.Up + Vector2.Right) * m_sproutRadius / 2.0f, 
+                                m_sproutTarget + (Vector2.Down + Vector2.Left) * m_sproutRadius / 2.0f,
+                                color, 3.0f);
+                }
+
+                foreach(Mushroom shroom in m_lostConnexion)
+                {
+                    Vector2 lineCenter = (shroom.Position + m_sproutSource) / 2.0f;
+                    
+                    DrawLine(   lineCenter + (Vector2.Up + Vector2.Left) * 5.0f, 
+                                lineCenter + (Vector2.Down + Vector2.Right) * 5.0f,
+                                m_InvalidColor, 3.0f);
+                                
+                    DrawLine(   lineCenter + (Vector2.Up + Vector2.Right) * 5.0f, 
+                                lineCenter + (Vector2.Down + Vector2.Left) * 5.0f,
+                                m_InvalidColor, 3.0f);
+                }
+
             }
             else if (m_showTargetTransfer)
             {
@@ -115,6 +171,9 @@ public partial class MushroomHelper : Node2D
         }
     }
 
+    //----------------------------------------------------------
+    //
+    //----------------------------------------------------------
     // Because DrawArc don't work ??
     public void DrawCircleArc(
         Vector2 pos, 
