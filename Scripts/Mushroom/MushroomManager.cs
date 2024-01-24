@@ -35,7 +35,7 @@ public partial class MushroomManager : Node2D
     //----------------------------------------------------------
     public override void _Ready()
     {
-        PackedScene levelToLoad = ResourceLoader.Load<PackedScene>("res://Scenes/LevelA.tscn");
+        PackedScene levelToLoad = GameManager.manager.m_CurrentLevel;
         m_Level = levelToLoad.Instantiate<Node2D>();
         AddChild(m_Level);
     }
@@ -244,7 +244,10 @@ public partial class MushroomManager : Node2D
         Mushroom result = null;
         foreach(Mushroom shroom in m_AllMushrooms)
         {
-            if (mush != shroom && (mush.IsSameKind(shroom) || mustBeSameType == false) && shroom.ConnectedToRoot())
+            if (mush != shroom 
+            && shroom.GetCurrentKind() != MushroomKind.NEUTRAL 
+            && (mush.IsSameKind(shroom) || mustBeSameType == false) 
+            && shroom.ConnectedToRoot())
             {
                 if (mush.CheckIfCanConnect(shroom))
                 {
@@ -315,11 +318,11 @@ public partial class MushroomManager : Node2D
                     {
                         Vector2 pos = GetViewport().GetMousePosition();
                         Vector2 move = pos - m_currentMushroom.GlobalPosition;
-                        float currentPower = m_currentMushroom.GetPower();
+                        float currentPower = Mathf.Min(m_currentMushroom.GetPower(), m_currentMushroom.GetPrevisionalPower());
                         
                         if (currentPower < move.LengthSquared())
                         {
-                            move = move.Normalized() * m_currentMushroom.GetRadius() * 0.99f;
+                            move = move.Normalized() * Mathf.Sqrt(currentPower) * 0.99f;
                             pos = m_currentMushroom.GlobalPosition + move;
                         }
 

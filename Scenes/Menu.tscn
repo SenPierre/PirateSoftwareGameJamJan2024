@@ -1,14 +1,92 @@
-[gd_scene load_steps=28 format=3 uid="uid://blph2c0jfcf7k"]
+[gd_scene load_steps=44 format=3 uid="uid://blph2c0jfcf7k"]
 
 [ext_resource type="Shader" path="res://Shaders/TitleShader.gdshader" id="1_1rvas"]
 [ext_resource type="Script" path="res://Scripts/MenuManager.cs" id="1_hosgp"]
 [ext_resource type="Texture2D" uid="uid://c8obym0eclfs7" path="res://Textures/Title.png" id="1_yin4o"]
+[ext_resource type="TileSet" uid="uid://bc8q455d1ebx1" path="res://Resources/Tileset/Tileset1.tres" id="2_3os4n"]
+[ext_resource type="PackedScene" uid="uid://bp018x60nt2et" path="res://Scenes/SceneButton.tscn" id="4_6ionu"]
 [ext_resource type="Texture2D" uid="uid://troidcpacuxl" path="res://Textures/JAM.png" id="4_ras2l"]
 [ext_resource type="Texture2D" uid="uid://b6x5oryfpj6pa" path="res://Textures/Start.png" id="5_sy6gl"]
+[ext_resource type="PackedScene" uid="uid://14s2bpidauy0" path="res://Scenes/LevelA.tscn" id="5_vqbco"]
+[ext_resource type="PackedScene" uid="uid://cqwprk7j414kn" path="res://Scenes/LevelB.tscn" id="6_4lqvt"]
+[ext_resource type="Texture2D" uid="uid://dook6qmdrndis" path="res://Textures/Godot_v4.1.1-stable_mono_win64_y1MOSViyRc.png" id="6_dyuwc"]
 [ext_resource type="Texture2D" uid="uid://c4jt56q2t0lka" path="res://Textures/Quit.png" id="6_pded7"]
 [ext_resource type="Texture2D" uid="uid://bvansg2gyr1ku" path="res://Textures/Selection.png" id="6_svdh0"]
 [ext_resource type="Script" path="res://Scripts/MenuButton.cs" id="6_winnr"]
+[ext_resource type="Texture2D" uid="uid://ca6y3y87bc1lk" path="res://Textures/Godot_v4.1.1-stable_mono_win64_gLFWlOGf6Z.png" id="8_u50ej"]
+[ext_resource type="PackedScene" uid="uid://o68spehybe40" path="res://Scenes/LevelC.tscn" id="9_gfcln"]
 [ext_resource type="Texture2D" uid="uid://d1x48a07xofnc" path="res://Textures/Return.png" id="9_sp0m0"]
+[ext_resource type="Texture2D" uid="uid://b1bmae8qt2tpb" path="res://Textures/Godot_v4.1.1-stable_mono_win64_6GStfCZ3rP.png" id="10_537ew"]
+[ext_resource type="PackedScene" uid="uid://dkfovglmh8pog" path="res://Scenes/LevelD.tscn" id="11_jstys"]
+[ext_resource type="PackedScene" uid="uid://debnwbc08lfts" path="res://Scenes/LevelE.tscn" id="12_iclax"]
+[ext_resource type="Texture2D" uid="uid://bypmvm3t1tum" path="res://Textures/Godot_v4.1.1-stable_mono_win64_payfuP34MU.png" id="12_n71ux"]
+[ext_resource type="Texture2D" uid="uid://d3wk8v16ibamv" path="res://Textures/Godot_v4.1.1-stable_mono_win64_gDOTCAIz1g.png" id="14_bh1x0"]
+
+[sub_resource type="Animation" id="Animation_0o2mw"]
+resource_name = "Idle"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:self_modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(0, 0, 0, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_jkvo5"]
+resource_name = "Over"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:self_modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_5msku"]
+resource_name = "Selected"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:self_modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(0, 0, 0, 1)]
+}
+tracks/1/type = "method"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("../..")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": [],
+"method": &"HideLevel"
+}]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_6xi1s"]
+_data = {
+"Idle": SubResource("Animation_0o2mw"),
+"Over": SubResource("Animation_jkvo5"),
+"Selected": SubResource("Animation_5msku")
+}
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_7h35h"]
 shader = ExtResource("1_1rvas")
@@ -138,7 +216,7 @@ tracks/1/keys = {
 "transitions": PackedFloat32Array(1),
 "values": [{
 "args": [],
-"method": &"StartGame"
+"method": &"DisplayLevel"
 }]
 }
 
@@ -215,7 +293,7 @@ _data = {
 "Selected": SubResource("Animation_2cwop")
 }
 
-[sub_resource type="Animation" id="Animation_0o2mw"]
+[sub_resource type="Animation" id="Animation_oyjdp"]
 resource_name = "Idle"
 tracks/0/type = "value"
 tracks/0/imported = false
@@ -230,7 +308,7 @@ tracks/0/keys = {
 "values": [Color(0, 0, 0, 1)]
 }
 
-[sub_resource type="Animation" id="Animation_jkvo5"]
+[sub_resource type="Animation" id="Animation_0uiyb"]
 resource_name = "Over"
 tracks/0/type = "value"
 tracks/0/imported = false
@@ -245,7 +323,7 @@ tracks/0/keys = {
 "values": [Color(1, 1, 1, 1)]
 }
 
-[sub_resource type="Animation" id="Animation_5msku"]
+[sub_resource type="Animation" id="Animation_774xp"]
 resource_name = "Selected"
 tracks/0/type = "value"
 tracks/0/imported = false
@@ -274,28 +352,83 @@ tracks/1/keys = {
 }]
 }
 
-[sub_resource type="AnimationLibrary" id="AnimationLibrary_6xi1s"]
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_nh044"]
 _data = {
-"Idle": SubResource("Animation_0o2mw"),
-"Over": SubResource("Animation_jkvo5"),
-"Selected": SubResource("Animation_5msku")
+"Idle": SubResource("Animation_oyjdp"),
+"Over": SubResource("Animation_0uiyb"),
+"Selected": SubResource("Animation_774xp")
 }
 
 [sub_resource type="LabelSettings" id="LabelSettings_25ifb"]
 font_color = Color(0, 0, 0, 1)
 
-[node name="Menu" type="Node2D" node_paths=PackedStringArray("mainPanel", "jamPanel")]
+[node name="Menu" type="Node2D" node_paths=PackedStringArray("mainPanel", "jamPanel", "levelPanel")]
+self_modulate = Color(0, 0, 0, 1)
 texture_filter = 1
 script = ExtResource("1_hosgp")
 mainPanel = NodePath("MainPanel")
 jamPanel = NodePath("JamPanel")
+levelPanel = NodePath("LevelPanel")
 
 [node name="ColorRect" type="ColorRect" parent="."]
 offset_right = 576.0
 offset_bottom = 324.0
 color = Color(0.47451, 0.745098, 0.286275, 1)
 
+[node name="LevelPanel" type="Node2D" parent="."]
+visible = false
+
+[node name="TileMap" type="TileMap" parent="LevelPanel"]
+tile_set = ExtResource("2_3os4n")
+format = 2
+layer_0/tile_data = PackedInt32Array(131072, 0, 1, 196608, 0, 1, 262144, 0, 2, 393219, 0, 1, 458755, 0, 1, 131089, 131072, 1, 196625, 131072, 1, 262161, 131072, 2, 524292, 65536, 2, 524293, 65536, 2, 524294, 65536, 2, 524295, 65536, 2, 524296, 65536, 2, 524297, 65536, 2, 524298, 65536, 2, 524299, 65536, 2, 524300, 65536, 2, 524301, 65536, 2, 393230, 131072, 1, 458766, 131072, 1, 327681, 327680, 1, 327682, 393216, 1, 327695, 327680, 1, 327696, 327680, 1, 65537, 65536, 0, 65538, 65536, 0, 65539, 65536, 0, 65540, 65536, 0, 65541, 65536, 0, 65542, 65536, 0, 65543, 65536, 0, 65544, 65536, 0, 65545, 65536, 0, 65546, 65536, 0, 65547, 65536, 0, 65548, 65536, 0, 65549, 65536, 0, 65550, 65536, 0, 65551, 65536, 0, 65552, 65536, 0, 65553, 131072, 0, 327697, 327680, 1, 524302, 131072, 2, 524291, 0, 2, 65536, 0, 0, 327680, 327680, 1, 327683, 0, 1, 327694, 131072, 1, 327685, 458752, 0, 327684, 458752, 0, 393221, 458752, 0, 393222, 458752, 0, 327687, 458752, 0, 327688, 458752, 0, 262153, 458752, 0, 196617, 458752, 0, 196616, 458752, 0, 196615, 458752, 0, 196614, 458752, 0, 196613, 458752, 0, 262149, 458752, 0, 327686, 458752, 0, 262152, 458752, 0, 262151, 458752, 0, 262150, 458752, 0, 393223, 458752, 0, 131078, 458752, 0, 393225, 458752, 0, 393226, 458752, 0, 327690, 458752, 0, 327689, 458752, 0, 393224, 458752, 0, 458760, 458752, 0, 393227, 458752, 0, 327692, 458752, 0, 262156, 458752, 0, 262155, 458752, 2, 327691, 458752, 0, 393228, 458752, 0, 196619, 458752, 0, 327693, 458752, 0, 262157, 458752, 0, 196621, 458752, 0, 196620, 458752, 0, 131084, 458752, 0, 196618, 458752, 0, 131082, 458752, 0, 262154, 458752, 0, 131083, 458752, 0, 458762, 458752, 0, 458761, 458752, 0, 458759, 458752, 0, 458758, 458752, 0, 458757, 458752, 0, 393220, 458752, 0, 458756, 458752, 0, 131079, 458752, 0, 131077, 458752, 0, 262148, 458752, 0, 196612, 458752, 0, 458753, 393216, 0, 393217, 327680, 1, 393216, 327680, 1, 458752, 327680, 1, 524288, 327680, 1, 524289, 327680, 1, 524290, 327680, 1, 458754, 327680, 0, 393218, 327680, 1, 458768, 393216, 1, 393232, 327680, 1, 393231, 327680, 1, 458767, 393216, 0, 524303, 327680, 1, 524304, 327680, 1, 524305, 327680, 1, 458769, 327680, 1, 393233, 327680, 1, 0, 327680, 0, 1, 327680, 1, 2, 393216, 0, 3, 327680, 1, 4, 327680, 1, 5, 393216, 2, 6, 327680, 1, 7, 327680, 0, 8, 327680, 1, 9, 327680, 1, 10, 327680, 1, 11, 393216, 0, 12, 327680, 1, 13, 327680, 2, 14, 327680, 1, 15, 327680, 1, 16, 327680, 1, 17, 327680, 1, 589841, 262144, 2, 589840, 327680, 1, 589839, 327680, 0, 589838, 327680, 1, 589837, 327680, 1, 589836, 327680, 1, 589835, 327680, 1, 589834, 327680, 1, 589833, 327680, 1, 589832, 393216, 0, 589831, 327680, 1, 589830, 327680, 0, 589829, 327680, 1, 589828, 327680, 1, 589827, 327680, 1, 589826, 327680, 1, 589825, 327680, 2, 589824, 327680, 0, 655360, 327680, 1, 655361, 327680, 1, 655362, 327680, 1, 655363, 327680, 1, 655364, 327680, 1, 655365, 327680, 1, 655366, 327680, 1, 655367, 327680, 1, 655368, 327680, 1, 655369, 327680, 1, 655370, 327680, 1, 655371, 327680, 1, 655372, 327680, 1, 655373, 327680, 1, 655374, 327680, 1, 655375, 327680, 1, 655376, 327680, 1, 655377, 327680, 1, 262145, 65536, 2, 262146, 65536, 2, 262147, 262144, 0, 262158, 196608, 0, 262159, 65536, 2, 262160, 65536, 2)
+
+[node name="TextureRect" type="TextureRect" parent="LevelPanel" node_paths=PackedStringArray("anim")]
+self_modulate = Color(0, 0, 0, 1)
+offset_left = 528.0
+offset_top = 276.0
+offset_right = 568.0
+offset_bottom = 316.0
+texture = ExtResource("9_sp0m0")
+script = ExtResource("6_winnr")
+anim = NodePath("AnimationPlayer")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="LevelPanel/TextureRect"]
+libraries = {
+"": SubResource("AnimationLibrary_6xi1s")
+}
+
+[node name="SceneButton" parent="LevelPanel" instance=ExtResource("4_6ionu")]
+position = Vector2(107, 100)
+m_image = ExtResource("6_dyuwc")
+m_level = ExtResource("5_vqbco")
+
+[node name="SceneButton2" parent="LevelPanel" instance=ExtResource("4_6ionu")]
+position = Vector2(284, 100)
+m_image = ExtResource("8_u50ej")
+m_level = ExtResource("6_4lqvt")
+
+[node name="SceneButton3" parent="LevelPanel" instance=ExtResource("4_6ionu")]
+position = Vector2(463, 100)
+m_image = ExtResource("10_537ew")
+m_level = ExtResource("9_gfcln")
+
+[node name="SceneButton4" parent="LevelPanel" instance=ExtResource("4_6ionu")]
+position = Vector2(199, 222)
+m_image = ExtResource("12_n71ux")
+m_level = ExtResource("11_jstys")
+
+[node name="SceneButton5" parent="LevelPanel" instance=ExtResource("4_6ionu")]
+position = Vector2(376, 222)
+m_image = ExtResource("14_bh1x0")
+m_level = ExtResource("12_iclax")
+
 [node name="MainPanel" type="Node2D" parent="."]
+
+[node name="TileMap" type="TileMap" parent="MainPanel"]
+tile_set = ExtResource("2_3os4n")
+format = 2
+layer_0/tile_data = PackedInt32Array(131072, 327680, 1, 196608, 327680, 1, 262144, 327680, 1, 393219, 327680, 1, 458755, 327680, 1, 131089, 393216, 0, 196625, 327680, 1, 262161, 327680, 1, 524292, 393216, 0, 524293, 327680, 1, 524294, 0, 1, 524295, 458752, 0, 524296, 458752, 0, 524297, 458752, 0, 524298, 458752, 0, 524299, 131072, 1, 524300, 327680, 1, 524301, 393216, 2, 393230, 327680, 1, 458766, 0, 0, 327681, 327680, 1, 327682, 327680, 1, 327695, 327680, 1, 327696, 393216, 1, 65537, 327680, 1, 65538, 327680, 1, 65539, 327680, 1, 65540, 327680, 1, 65541, 327680, 1, 65542, 0, 1, 65543, 458752, 0, 65544, 458752, 0, 65545, 458752, 0, 65546, 458752, 0, 65547, 131072, 1, 65548, 327680, 1, 65549, 327680, 1, 65550, 327680, 1, 65551, 327680, 1, 65552, 327680, 1, 65553, 327680, 1, 327697, 327680, 1, 524302, 0, 1, 524291, 327680, 1, 65536, 393216, 0, 327680, 327680, 1, 327683, 327680, 1, 327694, 327680, 1, 327685, 327680, 1, 327684, 393216, 1, 393221, 327680, 1, 393222, 0, 1, 327687, 458752, 0, 327688, 458752, 0, 262153, 458752, 0, 196617, 458752, 0, 196616, 458752, 0, 196615, 458752, 0, 196614, 0, 1, 196613, 327680, 1, 262149, 327680, 1, 327686, 0, 1, 262152, 458752, 0, 262151, 458752, 0, 262150, 0, 1, 393223, 458752, 0, 131078, 0, 1, 393225, 458752, 0, 393226, 458752, 0, 327690, 458752, 0, 327689, 458752, 0, 393224, 458752, 0, 458760, 458752, 0, 393227, 131072, 1, 327692, 327680, 1, 262156, 327680, 1, 262155, 131072, 1, 327691, 131072, 1, 393228, 327680, 1, 196619, 131072, 1, 327693, 327680, 1, 262157, 327680, 1, 196621, 327680, 1, 196620, 327680, 1, 131084, 327680, 1, 196618, 458752, 0, 131082, 458752, 0, 262154, 458752, 0, 131083, 131072, 1, 458762, 458752, 0, 458761, 458752, 0, 458759, 458752, 0, 458758, 0, 1, 458757, 327680, 1, 393220, 327680, 1, 458756, 327680, 1, 131079, 458752, 0, 131077, 327680, 1, 262148, 327680, 1, 196612, 327680, 1, 458753, 327680, 1, 393217, 327680, 1, 393216, 327680, 1, 458752, 327680, 1, 524288, 327680, 1, 524289, 327680, 2, 524290, 327680, 1, 458754, 327680, 1, 393218, 327680, 1, 458768, 131072, 0, 393232, 327680, 1, 393231, 327680, 1, 458767, 65536, 0, 524303, 458752, 0, 524304, 131072, 1, 524305, 327680, 1, 458769, 327680, 1, 393233, 327680, 1, 0, 327680, 1, 1, 327680, 1, 2, 327680, 1, 3, 327680, 1, 4, 327680, 1, 5, 327680, 1, 6, 0, 1, 7, 458752, 0, 8, 458752, 0, 9, 458752, 0, 10, 458752, 0, 11, 131072, 1, 12, 327680, 1, 13, 327680, 1, 14, 327680, 1, 15, 327680, 1, 16, 327680, 0, 17, 327680, 1, 589841, 327680, 1, 589840, 131072, 2, 589839, 65536, 2, 589838, 0, 2, 589837, 327680, 1, 589836, 327680, 1, 589835, 131072, 1, 589834, 458752, 0, 589833, 458752, 0, 589832, 458752, 0, 589831, 458752, 0, 589830, 0, 1, 589829, 327680, 1, 589828, 327680, 1, 589827, 327680, 1, 589826, 327680, 1, 589825, 327680, 1, 589824, 327680, 1, 655360, 327680, 1, 655361, 327680, 1, 655362, 327680, 1, 655363, 327680, 1, 655364, 327680, 1, 655365, 327680, 1, 655366, 0, 1, 655367, 458752, 0, 655368, 458752, 0, 655369, 458752, 0, 655370, 458752, 0, 655371, 131072, 1, 655372, 327680, 1, 655373, 327680, 1, 655374, 327680, 1, 655375, 327680, 1, 655376, 327680, 1, 655377, 327680, 1, 131073, 327680, 1, 196609, 327680, 1, 262145, 327680, 1, 131074, 327680, 1, 196610, 327680, 1, 262146, 327680, 0, 131075, 327680, 1, 196611, 327680, 1, 262147, 327680, 1, 131076, 327680, 1, 131080, 458752, 0, 131081, 458752, 0, 458763, 131072, 1, 458764, 327680, 1, 131085, 327680, 1, 393229, 327680, 0, 458765, 327680, 1, 131086, 327680, 1, 196622, 327680, 1, 262158, 327680, 1, 131087, 327680, 1, 196623, 327680, 1, 262159, 327680, 0, 131088, 327680, 1, 196624, 327680, 1, 262160, 327680, 1)
 
 [node name="Title" type="TextureRect" parent="MainPanel"]
 texture_filter = 1
@@ -308,10 +441,10 @@ texture = ExtResource("1_yin4o")
 
 [node name="TextureRect2" type="TextureRect" parent="MainPanel" node_paths=PackedStringArray("anim")]
 z_index = 1
-offset_left = 195.0
-offset_top = 22.0
-offset_right = 825.0
-offset_bottom = 522.0
+offset_left = 182.0
+offset_top = 21.0
+offset_right = 812.0
+offset_bottom = 521.0
 scale = Vector2(0.2, 0.2)
 pivot_offset = Vector2(315, 250)
 texture = ExtResource("4_ras2l")
@@ -382,7 +515,7 @@ anim = NodePath("AnimationPlayer")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="JamPanel/TextureRect"]
 libraries = {
-"": SubResource("AnimationLibrary_6xi1s")
+"": SubResource("AnimationLibrary_nh044")
 }
 
 [node name="Label" type="Label" parent="JamPanel"]
@@ -394,6 +527,9 @@ label_settings = SubResource("LabelSettings_25ifb")
 horizontal_alignment = 1
 vertical_alignment = 1
 
+[connection signal="gui_input" from="LevelPanel/TextureRect" to="LevelPanel/TextureRect" method="OnClick"]
+[connection signal="mouse_entered" from="LevelPanel/TextureRect" to="LevelPanel/TextureRect" method="OnEnter"]
+[connection signal="mouse_exited" from="LevelPanel/TextureRect" to="LevelPanel/TextureRect" method="OnExit"]
 [connection signal="gui_input" from="MainPanel/TextureRect2" to="MainPanel/TextureRect2" method="OnClick"]
 [connection signal="mouse_entered" from="MainPanel/TextureRect2" to="MainPanel/TextureRect2" method="OnEnter"]
 [connection signal="mouse_exited" from="MainPanel/TextureRect2" to="MainPanel/TextureRect2" method="OnExit"]

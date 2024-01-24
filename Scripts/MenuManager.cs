@@ -5,11 +5,7 @@ public partial class MenuManager : Node2D
 {
     [Export] public Node2D mainPanel;
     [Export] public Node2D jamPanel;
-
-    void StartGame()
-    {
-        GameManager.manager.GoToGame();
-    }
+    [Export] public Node2D levelPanel;
 
     void QuitGame()
     {
@@ -26,5 +22,17 @@ public partial class MenuManager : Node2D
     {
         mainPanel.Visible = true;
         jamPanel.Visible = false;
+    }
+
+    void DisplayLevel()
+    {
+        mainPanel.Visible = false;
+        levelPanel.Visible = true;
+    }
+
+    void HideLevel()
+    {
+        mainPanel.Visible = true;
+        levelPanel.Visible = false;
     }
 }

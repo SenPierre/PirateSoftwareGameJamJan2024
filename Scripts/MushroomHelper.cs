@@ -56,6 +56,7 @@ public partial class MushroomHelper : Node2D
 
                 m_lostConnexion.Clear();
                 currentMushroom.GetLooseConnexionIfCreateOffspring(ref m_lostConnexion);
+                float mushroomForecastPower = Mathf.Min(currentMushroom.GetPrevisionalPower(),currentMushroom.GetPower());
 
                 foreach(Mushroom lostMushroom in m_lostConnexion)
                 {
@@ -73,11 +74,11 @@ public partial class MushroomHelper : Node2D
                 }
 
                 Vector2 move = mousePos - currentMushroom.GlobalPosition;
-                float currentPower = currentMushroom.GetPower();
+                float currentPower = mushroomForecastPower;
                 
                 if (currentPower < move.LengthSquared())
                 {
-                    move = move.Normalized() * currentMushroom.GetRadius();
+                    move = move.Normalized() * Mathf.Sqrt(mushroomForecastPower);
                     mousePos = currentMushroom.GlobalPosition + move;
                 }
                 
@@ -89,7 +90,7 @@ public partial class MushroomHelper : Node2D
 
                 m_sproutSource =  currentMushroom.GlobalPosition;
                 m_sproutTarget = mousePos;
-                m_sproutRadius = Mathf.Sqrt(currentMushroom.GetPower() / 2.0f);
+                m_sproutRadius = Mathf.Sqrt(mushroomForecastPower / 2.0f);
             } 
             else if (mushroomFound != currentMushroom)
             {

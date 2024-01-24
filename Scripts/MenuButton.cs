@@ -13,13 +13,18 @@ public partial class MenuButton : TextureRect
     {
         anim.Play("Idle");
     }
-    public void OnClick(InputEvent ev)
+    public virtual void OnClick(InputEvent ev)
     {
-        InputEventMouse mouseEvent = (InputEventMouse)ev;
-        int buttonLeftPressed = ((int)mouseEvent.ButtonMask) & ((int)MouseButton.Left);
-        if (buttonLeftPressed != 0)
+        InputEventMouse mouseEvent = ev as InputEventMouseButton;
+        if (mouseEvent != null)
         {
-            anim.Play("Selected");
+            
+            int buttonLeftPressed = ((int)mouseEvent.ButtonMask) & ((int)MouseButton.Left);
+            if (buttonLeftPressed != 0)
+            {
+                anim.Play("Selected");
+                mouseEvent.ButtonMask = 0;
+            }
         }
     }
 }

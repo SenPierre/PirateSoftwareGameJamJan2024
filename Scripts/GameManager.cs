@@ -6,6 +6,7 @@ public partial class GameManager : Node2D
     static public GameManager manager = null;
 
     Node2D m_currentSubscene;
+    public PackedScene m_CurrentLevel;
 
     public override void _Ready()
     {
@@ -34,8 +35,9 @@ public partial class GameManager : Node2D
         ChangeScene(ResourceLoader.Load<PackedScene>("res://Scenes/Menu.tscn"));
     }
 
-    public void GoToGame()
+    public void GoToGame(PackedScene level)
     {
+        m_CurrentLevel = level;
         ChangeScene(ResourceLoader.Load<PackedScene>("res://Scenes/Game.tscn"));
     }
 

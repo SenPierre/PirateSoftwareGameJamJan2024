@@ -217,7 +217,8 @@ public partial class Mushroom : Node2D
 
         if (m_transferRemaining != 0.0f)
         {
-            float transferedThisFrame = Math.Min((float)delta * 200.0f, Math.Abs(m_transferRemaining)) * Math.Sign(m_transferRemaining);
+            float transferSpeed = m_transferRemaining > 0.0f ? 500.0f : 5000.0f;
+            float transferedThisFrame = Math.Min((float)delta * transferSpeed, Math.Abs(m_transferRemaining)) * Math.Sign(m_transferRemaining);
             powerToAdd += transferedThisFrame;
             m_transferRemaining -= transferedThisFrame;
         }
@@ -886,7 +887,7 @@ public partial class Mushroom : Node2D
     {
         if (m_deployedSeed == null && (pos - GlobalPosition).LengthSquared() > 400.0f)
         {
-            float newPower = m_radius * m_radius / 2.0f;
+            float newPower = Mathf.Min(GetPrevisionalPower(),GetPower()) / 2.0f;
             float newRadius = Mathf.Sqrt(newPower);
             if (m_radius * m_radius > (pos - GlobalPosition).LengthSquared())
             {
