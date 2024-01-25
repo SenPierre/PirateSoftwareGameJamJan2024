@@ -34,6 +34,7 @@ public partial class Mushroom : Node2D
     private Sprite2D m_SelectedSprite;
     private Line2D m_Line2D;
     private Label m_PowerLabel;
+    private SoundPlayer m_SoundPlayer;
     private Node2D m_Particles;
 
     private bool m_ParentConnectionBroken = false;
@@ -80,6 +81,7 @@ public partial class Mushroom : Node2D
         m_SelectedSprite = m_Sprite.GetNode<Sprite2D>("Select");
         m_Particles = m_Sprite.GetNode<Node2D>("CPUParticles2D");
         m_PowerLabel = GetNode<Label>("PowerLabel");
+        m_SoundPlayer = GetNode<SoundPlayer>("SoundPlayer");
         base._EnterTree();
     }
 
@@ -105,6 +107,8 @@ public partial class Mushroom : Node2D
         m_TrueSpawningLerp = 0.0f;
 
         m_Particles.Visible = m_generatePower;
+
+        m_SoundPlayer.PlayPop();
     }
 
     //----------------------------------------------------------
@@ -720,13 +724,14 @@ public partial class Mushroom : Node2D
             if (massTransfer)
             {
 
-                transfer.m_PowerTransfered = ComputeMaxTransferPossible();
+                transfer.m_PowerTransfered = ComputeMaxTransferPossible() * 0.95f;
                 Transfer(-transfer.m_PowerTransfered);
 
                 if (m_MassTransferAbsorbTimer > 0.0f)
                 {
                     transfer.m_PowerTransfered += m_lastSentTransfer.m_PowerTransfered;
                     m_lastSentTransfer.QueueFree();
+                    m_SoundPlayer.PlayBouip();
                 }
             }
             else
@@ -734,7 +739,6 @@ public partial class Mushroom : Node2D
                 transfer.m_PowerTransfered = 100.0f;
                 Transfer(-100.0f);
             }
-            transfer.m_kind = m_currentKind;
             AddSibling(transfer);
             m_MassTransferAbsorbTimer = 0.5f;
             m_lastSentTransfer = transfer;
@@ -749,6 +753,18 @@ public partial class Mushroom : Node2D
     public void Transfer(float power)
     {
         m_transferRemaining += power;
+    }
+
+    //----------------------------------------------------------
+    //
+    //----------------------------------------------------------
+    public void EndTransfer(float power)
+    {
+        Transfer(power);
+        if (power > 100)
+        {
+            m_SoundPlayer.PlayPiuob();
+        }
     }
 
     //----------------------------------------------------------

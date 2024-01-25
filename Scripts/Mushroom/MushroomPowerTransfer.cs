@@ -7,11 +7,11 @@ public partial class MushroomPowerTransfer : Node2D
     [Export] public float m_speed;
     [Export] public Sprite2D m_Sprite;
 
-    public MushroomKind m_kind;
     public List<Mushroom> m_Path;
     public float m_PowerTransfered = 100.0f;
 
     private Mushroom m_previousMushroom = null;
+    private bool m_reversing = false;
 
     public override void _Ready()
     {
@@ -27,16 +27,17 @@ public partial class MushroomPowerTransfer : Node2D
         base._Process(delta);
 
         float moveDuringThatFrame = (float)TimeManager.GetDeltaTime() * m_speed;
-        Vector2 remainingMoveUntilNextNode = m_Path[0].Position - Position;
+        Mushroom curshroom = m_Path[0];
+        Vector2 remainingMoveUntilNextNode = curshroom.Position - Position;
         if (remainingMoveUntilNextNode.LengthSquared() > moveDuringThatFrame * moveDuringThatFrame)
         {
-            if ((m_previousMushroom != null 
-                && (m_previousMushroom.GetCurrentKind() != m_kind 
-                 || m_previousMushroom.ConnectedToRoot() == false))
-            || (m_Path[0].GetCurrentKind() != m_kind)
-            || (m_Path[0].ConnectedToRoot() == false))
+            if (curshroom != m_previousMushroom &&  
+            ((m_previousMushroom.IsParentOf(curshroom) == false && curshroom.IsParentOf(m_previousMushroom) == false )  
+            || curshroom.ConnectedToRoot() == false))
             {
-                QueueFree();
+                m_Path.Clear();
+                m_Path.Add(m_previousMushroom);
+                m_reversing = true;
             }
             else
             {
@@ -45,22 +46,24 @@ public partial class MushroomPowerTransfer : Node2D
         }
         else
         {
-            Mushroom mushroom = m_Path[0];
-            Position = mushroom.Position;
+            m_previousMushroom = curshroom;
+            Position = m_previousMushroom.Position;
             m_Path.RemoveAt(0);
             bool pathBroken = false;
-            foreach (Mushroom room in m_Path)
+            if (m_Path.Count > 0)
             {
-                if (room.GetCurrentKind() != m_kind || room.ConnectedToRoot() == false)
+                Mushroom nextshroom = m_Path[0];
+                if ((m_previousMushroom.IsParentOf(nextshroom) == false 
+                && nextshroom.IsParentOf(m_previousMushroom) == false ) 
+                || m_previousMushroom.ConnectedToRoot() == false)
                 {
                     pathBroken = true;
-                    break;
                 }
             }
             
             if (m_Path.Count == 0 || pathBroken)
             {
-                mushroom.Transfer(m_PowerTransfered);
+                m_previousMushroom.EndTransfer(m_PowerTransfered);
                 QueueFree();
             }
         }

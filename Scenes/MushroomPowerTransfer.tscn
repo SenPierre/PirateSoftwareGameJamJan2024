@@ -10,4 +10,5 @@ m_speed = 50.0
 m_Sprite = NodePath("Sprite2D")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
+z_index = 2
 texture = ExtResource("1_vvetc")

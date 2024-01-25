@@ -35,7 +35,7 @@ public class TargetSelectTransferToNearestOther : TargetSelectTransfer
         {
             foreach(Mushroom shroom in shroomList)
             {
-                if (shroom.WillLooseConnexionIfTransfer() == false &&
+                if (shroom != outTarget && shroom.WillLooseConnexionIfTransfer() == false &&
                     (outSrc == null || outSrc.GetPrevisionalPower() < shroom.GetPrevisionalPower()))
                 {
                     outSrc = shroom;

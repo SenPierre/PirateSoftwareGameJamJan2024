@@ -306,7 +306,7 @@ public partial class MushroomManager : Node2D
 
                     Mushroom MushroomFound = CheckMushroomCloseness(GetViewport().GetMousePosition());
 
-                    if (MushroomFound != null && MushroomFound.GetCurrentKind() == MushroomKind.GOOD)
+                    if (MushroomFound != null && MushroomFound.IsSameKind(m_currentMushroom))
                     {
                         if (m_currentMushroom.WillLooseConnexionIfTransfer() == false)
                         {
