@@ -82,7 +82,7 @@ texture = ExtResource("4_66tlr")
 [node name="MaskDrawer" type="Node2D" parent="."]
 script = ExtResource("2_y6s1w")
 
-[node name="PowerLabel" type="Label" parent="MaskDrawer"]
+[node name="PowerLabel" type="Label" parent="."]
 z_index = 10
 offset_left = -30.0
 offset_top = 5.0
