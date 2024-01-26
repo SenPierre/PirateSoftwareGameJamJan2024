@@ -14,7 +14,7 @@ public partial class SoundPlayer : AudioStreamPlayer
 
     public void PlayPop()
     {
-        if (Playing == false)
+        if (Playing == false && GameManager.manager.m_bSoundActive) 
         {
             Stream = PopSound;
             PitchScale = RandomManager.GetFloatRange(0.8f, 1.2f);
@@ -24,7 +24,7 @@ public partial class SoundPlayer : AudioStreamPlayer
 
     public void PlayBouip()
     {
-        if (Playing == false)
+        if (Playing == false && GameManager.manager.m_bSoundActive)
         {
             Stream = BouipSound;
             PitchScale = RandomManager.GetFloatRange(0.8f, 1.2f);
@@ -34,7 +34,7 @@ public partial class SoundPlayer : AudioStreamPlayer
 
     public void PlayPiuob()
     {
-        if (Playing == false)
+        if (Playing == false && GameManager.manager.m_bSoundActive)
         {
             Stream = PiuobSound;
             PitchScale = RandomManager.GetFloatRange(0.8f, 1.2f);

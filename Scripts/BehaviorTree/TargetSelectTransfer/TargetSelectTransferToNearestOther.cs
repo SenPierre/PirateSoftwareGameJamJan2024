@@ -6,7 +6,7 @@ public class TargetSelectTransferToNearestOther : TargetSelectTransfer
 {
     private MushroomKind m_targetKind;
     
-    public TargetSelectTransferToNearestOther(MushroomKind targetKind, MushroomAI ai) : base(ai){}
+    public TargetSelectTransferToNearestOther(MushroomKind targetKind, MushroomAI ai) : base(ai){m_targetKind = targetKind;}
 
     public override bool ComputeTarget(ref Mushroom outSrc, ref Mushroom outTarget)
     {
@@ -35,8 +35,9 @@ public class TargetSelectTransferToNearestOther : TargetSelectTransfer
         {
             foreach(Mushroom shroom in shroomList)
             {
-                if (shroom != outTarget && shroom.WillLooseConnexionIfTransfer() == false &&
-                    (outSrc == null || outSrc.GetPrevisionalPower() < shroom.GetPrevisionalPower()))
+                float shroomForecastPower = Math.Min(shroom.GetPower(), shroom.GetPrevisionalPower());
+                if (shroom != outTarget && shroom.WillLooseConnexionIfTransfer() == false && shroomForecastPower > 200.0f &&
+                    (outSrc == null || outSrc.GetPrevisionalPower() < shroomForecastPower))
                 {
                     outSrc = shroom;
                 }

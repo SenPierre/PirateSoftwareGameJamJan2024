@@ -9,6 +9,8 @@ public partial class MushroomManager : Node2D
     [Export] public CanvasItem ResumeButton;
     [Export] public CanvasItem VictoryPanel;
     [Export] public CanvasItem GameOverPanel;
+    
+    [Export] public CanvasItem SoundCross;
 
     public static MushroomManager manager;
     public const float c_TooCloseToSprout = 20.0f;
@@ -37,6 +39,7 @@ public partial class MushroomManager : Node2D
     {
         PackedScene levelToLoad = GameManager.manager.m_CurrentLevel;
         m_Level = levelToLoad.Instantiate<Node2D>();
+        SoundCross.Visible = !GameManager.manager.m_bSoundActive;
         AddChild(m_Level);
     }
 
@@ -56,6 +59,15 @@ public partial class MushroomManager : Node2D
             m_Level.RemoveChild(dead);
         }
         m_ToRemove.Clear();
+    }
+
+    //----------------------------------------------------------
+    //
+    //----------------------------------------------------------
+    public void ToggleSound()
+    {
+        GameManager.manager.m_bSoundActive = !GameManager.manager.m_bSoundActive;
+        SoundCross.Visible = !GameManager.manager.m_bSoundActive;
     }
 
     //----------------------------------------------------------

@@ -1,4 +1,4 @@
-[gd_scene load_steps=31 format=3 uid="uid://6wo1c0hxd8vt"]
+[gd_scene load_steps=39 format=3 uid="uid://6wo1c0hxd8vt"]
 
 [ext_resource type="Script" path="res://Scripts/Mushroom/MushroomManager.cs" id="1_hljsn"]
 [ext_resource type="Script" path="res://Scripts/TimeManager.cs" id="2_l8wej"]
@@ -15,6 +15,10 @@
 [ext_resource type="Texture2D" uid="uid://c4jt56q2t0lka" path="res://Textures/Quit.png" id="10_q2vaw"]
 [ext_resource type="Texture2D" uid="uid://vp4qc5cabyo7" path="res://Textures/Victory.png" id="12_agund"]
 [ext_resource type="Texture2D" uid="uid://igtac8rsavk1" path="res://Textures/GameOver.png" id="13_mopdq"]
+[ext_resource type="Texture2D" uid="uid://dy4yaa2j4knd5" path="res://Textures/MuteButton.png" id="15_o5xub"]
+[ext_resource type="Texture2D" uid="uid://dg7f3l5wwwp8o" path="res://Textures/MuteButtonOver.png" id="16_l2efy"]
+[ext_resource type="Texture2D" uid="uid://c64y4bnw4re8s" path="res://Textures/MuteButtonCrossed.png" id="16_mu78u"]
+[ext_resource type="Texture2D" uid="uid://b0lrp5b2k3imp" path="res://Textures/MuteButtonCrossedOver.png" id="18_yk818"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_la6ye"]
 size = Vector2(576, 324)
@@ -228,13 +232,116 @@ _data = {
 "Selected": SubResource("Animation_ymfqa")
 }
 
-[node name="MushroomManager" type="Node2D" node_paths=PackedStringArray("PauseScreen", "ResumeButton", "VictoryPanel", "GameOverPanel")]
+[sub_resource type="Animation" id="Animation_cfunl"]
+resource_name = "Idle"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("CanvasLayer/MuteButton/MuteSelected:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("CanvasLayer/MuteButton/Cross/CrossSelected:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+
+[sub_resource type="Animation" id="Animation_6par5"]
+resource_name = "Over"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("CanvasLayer/MuteButton/MuteSelected:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("CanvasLayer/MuteButton/Cross/CrossSelected:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+
+[sub_resource type="Animation" id="Animation_iwlnl"]
+resource_name = "Selected"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("CanvasLayer/MuteButton/MuteSelected:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("CanvasLayer/MuteButton/Cross/CrossSelected:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/2/type = "method"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath(".")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": [],
+"method": &"ToggleSound"
+}]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_r2wlw"]
+_data = {
+"Idle": SubResource("Animation_cfunl"),
+"Over": SubResource("Animation_6par5"),
+"Selected": SubResource("Animation_iwlnl")
+}
+
+[node name="MushroomManager" type="Node2D" node_paths=PackedStringArray("PauseScreen", "ResumeButton", "VictoryPanel", "GameOverPanel", "SoundCross")]
 texture_filter = 1
 script = ExtResource("1_hljsn")
 PauseScreen = NodePath("CanvasLayer/PauseScreen")
 ResumeButton = NodePath("CanvasLayer/PauseScreen/Resume")
 VictoryPanel = NodePath("CanvasLayer/PauseScreen/Victory")
 GameOverPanel = NodePath("CanvasLayer/PauseScreen/GameOver")
+SoundCross = NodePath("CanvasLayer/MuteButton/Cross")
 
 [node name="TimeManager" type="Node2D" parent="."]
 script = ExtResource("2_l8wej")
@@ -372,6 +479,42 @@ offset_bottom = 95.0
 scale = Vector2(3, 3)
 texture = ExtResource("12_agund")
 
+[node name="MuteButton" type="TextureRect" parent="CanvasLayer" node_paths=PackedStringArray("anim")]
+texture_filter = 1
+offset_left = 40.0
+offset_right = 80.0
+offset_bottom = 40.0
+texture = ExtResource("15_o5xub")
+script = ExtResource("7_3cnas")
+anim = NodePath("AnimationPlayer")
+
+[node name="MuteSelected" type="TextureRect" parent="CanvasLayer/MuteButton"]
+visible = false
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+texture = ExtResource("16_l2efy")
+
+[node name="Cross" type="TextureRect" parent="CanvasLayer/MuteButton"]
+visible = false
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+texture = ExtResource("16_mu78u")
+
+[node name="CrossSelected" type="TextureRect" parent="CanvasLayer/MuteButton/Cross"]
+visible = false
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+texture = ExtResource("18_yk818")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="CanvasLayer/MuteButton"]
+root_node = NodePath("../../..")
+libraries = {
+"": SubResource("AnimationLibrary_r2wlw")
+}
+
 [node name="MushroomAI" type="Node2D" parent="."]
 script = ExtResource("6_bd8l0")
 m_AIKind = 1
@@ -386,3 +529,6 @@ m_AIKind = 1
 [connection signal="gui_input" from="CanvasLayer/PauseScreen/Quit" to="CanvasLayer/PauseScreen/Quit" method="OnClick"]
 [connection signal="mouse_entered" from="CanvasLayer/PauseScreen/Quit" to="CanvasLayer/PauseScreen/Quit" method="OnEnter"]
 [connection signal="mouse_exited" from="CanvasLayer/PauseScreen/Quit" to="CanvasLayer/PauseScreen/Quit" method="OnExit"]
+[connection signal="gui_input" from="CanvasLayer/MuteButton" to="CanvasLayer/MuteButton" method="OnClick"]
+[connection signal="mouse_entered" from="CanvasLayer/MuteButton" to="CanvasLayer/MuteButton" method="OnEnter"]
+[connection signal="mouse_exited" from="CanvasLayer/MuteButton" to="CanvasLayer/MuteButton" method="OnExit"]

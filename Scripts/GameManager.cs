@@ -8,6 +8,8 @@ public partial class GameManager : Node2D
     Node2D m_currentSubscene;
     public PackedScene m_CurrentLevel;
 
+    public bool m_bSoundActive = true;
+
     public override void _Ready()
     {
         manager = this;
