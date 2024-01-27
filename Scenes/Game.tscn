@@ -1,4 +1,4 @@
-[gd_scene load_steps=39 format=3 uid="uid://6wo1c0hxd8vt"]
+[gd_scene load_steps=51 format=3 uid="uid://6wo1c0hxd8vt"]
 
 [ext_resource type="Script" path="res://Scripts/Mushroom/MushroomManager.cs" id="1_hljsn"]
 [ext_resource type="Script" path="res://Scripts/TimeManager.cs" id="2_l8wej"]
@@ -12,13 +12,17 @@
 [ext_resource type="Texture2D" uid="uid://b1f3enjmdg6gh" path="res://Textures/PauseButtonOver.png" id="7_p44w8"]
 [ext_resource type="Texture2D" uid="uid://dx6g58uoekal2" path="res://Textures/Resume.png" id="8_ybvnn"]
 [ext_resource type="Texture2D" uid="uid://bvansg2gyr1ku" path="res://Textures/Selection.png" id="9_mdp5n"]
+[ext_resource type="Texture2D" uid="uid://r75i8i6pqcwl" path="res://Textures/HelpButton.png" id="10_lid86"]
 [ext_resource type="Texture2D" uid="uid://c4jt56q2t0lka" path="res://Textures/Quit.png" id="10_q2vaw"]
+[ext_resource type="Texture2D" uid="uid://blpwatg0c1x21" path="res://Textures/HelpButtonSelect.png" id="11_w7xru"]
 [ext_resource type="Texture2D" uid="uid://vp4qc5cabyo7" path="res://Textures/Victory.png" id="12_agund"]
 [ext_resource type="Texture2D" uid="uid://igtac8rsavk1" path="res://Textures/GameOver.png" id="13_mopdq"]
 [ext_resource type="Texture2D" uid="uid://dy4yaa2j4knd5" path="res://Textures/MuteButton.png" id="15_o5xub"]
 [ext_resource type="Texture2D" uid="uid://dg7f3l5wwwp8o" path="res://Textures/MuteButtonOver.png" id="16_l2efy"]
 [ext_resource type="Texture2D" uid="uid://c64y4bnw4re8s" path="res://Textures/MuteButtonCrossed.png" id="16_mu78u"]
 [ext_resource type="Texture2D" uid="uid://b0lrp5b2k3imp" path="res://Textures/MuteButtonCrossedOver.png" id="18_yk818"]
+[ext_resource type="PackedScene" uid="uid://vbxqcsc4f7wn" path="res://Scenes/Help.tscn" id="19_vh24h"]
+[ext_resource type="Texture2D" uid="uid://d1x48a07xofnc" path="res://Textures/Return.png" id="20_0ujje"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_la6ye"]
 size = Vector2(576, 324)
@@ -98,6 +102,72 @@ _data = {
 "Idle": SubResource("Animation_45en1"),
 "Over": SubResource("Animation_5g1b8"),
 "Selected": SubResource("Animation_71abd")
+}
+
+[sub_resource type="Animation" id="Animation_62jbh"]
+resource_name = "Idle"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("TextureRect:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+
+[sub_resource type="Animation" id="Animation_4tig7"]
+resource_name = "Over"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("TextureRect:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+
+[sub_resource type="Animation" id="Animation_mx4wt"]
+resource_name = "Selected"
+tracks/0/type = "method"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("../..")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": [],
+"method": &"ShowHelp"
+}]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("TextureRect:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_0x7bp"]
+_data = {
+"Idle": SubResource("Animation_62jbh"),
+"Over": SubResource("Animation_4tig7"),
+"Selected": SubResource("Animation_mx4wt")
 }
 
 [sub_resource type="Animation" id="Animation_r4sh7"]
@@ -334,13 +404,80 @@ _data = {
 "Selected": SubResource("Animation_iwlnl")
 }
 
-[node name="MushroomManager" type="Node2D" node_paths=PackedStringArray("PauseScreen", "ResumeButton", "VictoryPanel", "GameOverPanel", "SoundCross")]
+[sub_resource type="Animation" id="Animation_ftuvc"]
+resource_name = "Idle"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:self_modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(0, 0, 0, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_wk44j"]
+resource_name = "Over"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:self_modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_dww71"]
+resource_name = "Selected"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:self_modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(0, 0, 0, 1)]
+}
+tracks/1/type = "method"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("../../..")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": [],
+"method": &"HideHelp"
+}]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_v376b"]
+_data = {
+"Idle": SubResource("Animation_ftuvc"),
+"Over": SubResource("Animation_wk44j"),
+"Selected": SubResource("Animation_dww71")
+}
+
+[node name="MushroomManager" type="Node2D" node_paths=PackedStringArray("PauseScreen", "ResumeButton", "VictoryPanel", "GameOverPanel", "HelpPanel", "SoundCross")]
 texture_filter = 1
 script = ExtResource("1_hljsn")
 PauseScreen = NodePath("CanvasLayer/PauseScreen")
 ResumeButton = NodePath("CanvasLayer/PauseScreen/Resume")
 VictoryPanel = NodePath("CanvasLayer/PauseScreen/Victory")
 GameOverPanel = NodePath("CanvasLayer/PauseScreen/GameOver")
+HelpPanel = NodePath("CanvasLayer/Help")
 SoundCross = NodePath("CanvasLayer/MuteButton/Cross")
 
 [node name="TimeManager" type="Node2D" parent="."]
@@ -402,6 +539,28 @@ texture = ExtResource("7_p44w8")
 [node name="AnimationPlayerPause" type="AnimationPlayer" parent="CanvasLayer/PauseButton"]
 libraries = {
 "": SubResource("AnimationLibrary_n6r3f")
+}
+
+[node name="HelpButton" type="TextureRect" parent="CanvasLayer" node_paths=PackedStringArray("anim")]
+z_index = 2
+texture_filter = 1
+offset_left = 83.0
+offset_right = 123.0
+offset_bottom = 40.0
+texture = ExtResource("10_lid86")
+script = ExtResource("7_3cnas")
+anim = NodePath("AnimationPlayer")
+
+[node name="TextureRect" type="TextureRect" parent="CanvasLayer/HelpButton"]
+visible = false
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+texture = ExtResource("11_w7xru")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="CanvasLayer/HelpButton"]
+libraries = {
+"": SubResource("AnimationLibrary_0x7bp")
 }
 
 [node name="PauseScreen" type="ColorRect" parent="CanvasLayer"]
@@ -515,6 +674,26 @@ libraries = {
 "": SubResource("AnimationLibrary_r2wlw")
 }
 
+[node name="Help" parent="CanvasLayer" instance=ExtResource("19_vh24h")]
+visible = false
+z_index = 20
+
+[node name="TextureRect" type="TextureRect" parent="CanvasLayer/Help" node_paths=PackedStringArray("anim")]
+self_modulate = Color(0, 0, 0, 1)
+offset_left = 507.0
+offset_top = 281.0
+offset_right = 547.0
+offset_bottom = 321.0
+texture = ExtResource("20_0ujje")
+script = ExtResource("7_3cnas")
+anim = NodePath("../AnimationPlayer")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="CanvasLayer/Help"]
+root_node = NodePath("../TextureRect")
+libraries = {
+"": SubResource("AnimationLibrary_v376b")
+}
+
 [node name="MushroomAI" type="Node2D" parent="."]
 script = ExtResource("6_bd8l0")
 m_AIKind = 1
@@ -523,6 +702,9 @@ m_AIKind = 1
 [connection signal="gui_input" from="CanvasLayer/PauseButton" to="CanvasLayer/PauseButton" method="OnClick"]
 [connection signal="mouse_entered" from="CanvasLayer/PauseButton" to="CanvasLayer/PauseButton" method="OnEnter"]
 [connection signal="mouse_exited" from="CanvasLayer/PauseButton" to="CanvasLayer/PauseButton" method="OnExit"]
+[connection signal="gui_input" from="CanvasLayer/HelpButton" to="CanvasLayer/HelpButton" method="OnClick"]
+[connection signal="mouse_entered" from="CanvasLayer/HelpButton" to="CanvasLayer/HelpButton" method="OnEnter"]
+[connection signal="mouse_exited" from="CanvasLayer/HelpButton" to="CanvasLayer/HelpButton" method="OnExit"]
 [connection signal="gui_input" from="CanvasLayer/PauseScreen/Resume" to="CanvasLayer/PauseScreen/Resume" method="OnClick"]
 [connection signal="mouse_entered" from="CanvasLayer/PauseScreen/Resume" to="CanvasLayer/PauseScreen/Resume" method="OnEnter"]
 [connection signal="mouse_exited" from="CanvasLayer/PauseScreen/Resume" to="CanvasLayer/PauseScreen/Resume" method="OnExit"]
@@ -532,3 +714,6 @@ m_AIKind = 1
 [connection signal="gui_input" from="CanvasLayer/MuteButton" to="CanvasLayer/MuteButton" method="OnClick"]
 [connection signal="mouse_entered" from="CanvasLayer/MuteButton" to="CanvasLayer/MuteButton" method="OnEnter"]
 [connection signal="mouse_exited" from="CanvasLayer/MuteButton" to="CanvasLayer/MuteButton" method="OnExit"]
+[connection signal="gui_input" from="CanvasLayer/Help/TextureRect" to="CanvasLayer/Help/TextureRect" method="OnClick"]
+[connection signal="mouse_entered" from="CanvasLayer/Help/TextureRect" to="CanvasLayer/Help/TextureRect" method="OnEnter"]
+[connection signal="mouse_exited" from="CanvasLayer/Help/TextureRect" to="CanvasLayer/Help/TextureRect" method="OnExit"]

@@ -9,6 +9,7 @@ public partial class MushroomManager : Node2D
     [Export] public CanvasItem ResumeButton;
     [Export] public CanvasItem VictoryPanel;
     [Export] public CanvasItem GameOverPanel;
+    [Export] public CanvasItem HelpPanel;
     
     [Export] public CanvasItem SoundCross;
 
@@ -202,6 +203,24 @@ public partial class MushroomManager : Node2D
     {
         ResumeButton.Visible = false;
         PauseScreen.Visible = false;
+        TimeManager.GetManager().Unpause();
+    }
+
+    //----------------------------------------------------------
+    //
+    //----------------------------------------------------------
+    public void ShowHelp()
+    {
+        HelpPanel.Visible = true;
+        TimeManager.GetManager().Pause();
+    }
+
+    //----------------------------------------------------------
+    //
+    //----------------------------------------------------------
+    public void HideHelp()
+    {
+        HelpPanel.Visible = false;
         TimeManager.GetManager().Unpause();
     }
 

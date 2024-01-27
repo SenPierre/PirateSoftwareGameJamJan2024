@@ -36,8 +36,12 @@ public class TargetSelectTransferToNearestOther : TargetSelectTransfer
             foreach(Mushroom shroom in shroomList)
             {
                 float shroomForecastPower = Math.Min(shroom.GetPower(), shroom.GetPrevisionalPower());
-                if (shroom != outTarget && shroom.WillLooseConnexionIfTransfer() == false && shroomForecastPower > 200.0f &&
-                    (outSrc == null || outSrc.GetPrevisionalPower() < shroomForecastPower))
+                if (shroom != outTarget 
+                && shroom.WillLooseConnexionIfTransfer() == false
+                 && shroom.IsParentOf(outTarget) == false
+                 && outTarget.IsParentOf(shroom) == false
+                 && shroomForecastPower > 200.0f 
+                 && (outSrc == null || outSrc.GetPrevisionalPower() < shroomForecastPower))
                 {
                     outSrc = shroom;
                 }
